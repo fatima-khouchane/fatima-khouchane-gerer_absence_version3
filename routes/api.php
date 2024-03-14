@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SurveillanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\EventListener\SurrogateListener;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +32,9 @@ Route::controller(AuthController::class)->group(function(){
 
     Route::get('me','userDetails');
 });
+
+
+Route::get('/filieres', [SurveillanceController::class, 'getFiliere']);
+Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
+Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilter']);
+Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);

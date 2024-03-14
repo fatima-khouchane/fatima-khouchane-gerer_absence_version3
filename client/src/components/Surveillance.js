@@ -1,224 +1,395 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/styleSurveillance.css";
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import Swal from "sweetalert2";
+import axios from "axios";
+
 const Surveillance = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [filieres, setFilieres] = useState([]);
+    const [statusValues, setStatusValues] = useState([]);
+    const [groupes, setGroupes] = useState([]);
+    const [selectedFiliere, setSelectedFiliere] = useState("");
+    const [selectedGroupe, setSelectedGroupe] = useState("");
+    const [stagiaires, setStagiaires] = useState([]);
+    const [selectedDate, setSelectedDate] = useState();
+    const [nbr_absence, setNbr_absence] = useState([]);
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/");
+                return;
+            }
+        };
+
+        const fetchFilieres = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/filieres"
+                );
+                setFilieres(response.data);
+            } catch (error) {
+                console.error("Error fetching filieres:", error);
+            }
+        };
+
+        const fetchGroupes = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8000/api/groupes"
+                );
+                setGroupes(response.data);
+            } catch (error) {
+                console.error("Error fetching groupes:", error);
+            }
+        };
+
+        fetchFilieres();
+        fetchGroupes();
+        fetchUserDetails();
+    }, []);
+
+    const fetchStagiaires = async () => {
+        try {
+            if (selectedFiliere && selectedGroupe) {
+                const response = await axios.get(
+                    `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
+                );
+                const initialStatusValues = response.data.map(() => "Présent");
+                const initialNbrAbsences = response.data.map(() => 0);
+                setStatusValues(initialStatusValues);
+                setNbr_absence(initialNbrAbsences);
+                setStagiaires(response.data);
+            } else {
+                console.error(
+                    "Veuillez sélectionner une filière et un groupe."
+                );
+            }
+        } catch (error) {
+            console.error("Error fetching stagiaires:", error);
+        }
     };
-    fetchUserDetails();
-  }, []);
 
-  const saveAbsence = () => {
-    Swal.fire({
-      position: "center",
-      width: "fit-content",
-      title: "Absence est bien enregistrée",
-      showConfirmButton: false,
-      timer: 1500,
-      customClass: {
-        title: "green-title",
-      },
-    });
-  };
+    const handleNbrAbsenceChange = (value, index) => {
+        const updatedNbrAbsence = [...nbr_absence];
+        updatedNbrAbsence[index] = value;
+        setNbr_absence(updatedNbrAbsence);
+    };
 
-  return (
-    <div div className="allContainer">
-      <input type="checkbox" id="menu-toggle" />
-      <div className="sidebar">
-        <div className="side-header">
-          <img src={OFPPT_Logo} alt="logo_ofppt" className="logo" />
-        </div>
+    const saveAbsence = async () => {
+        try {
+            const validStagiaires = stagiaires.every(
+                (stagiaire) =>
+                    stagiaire.id && stagiaire.id_groupe && stagiaire.id_filiere
+            );
+            if (!validStagiaires) {
+                console.error(
+                    "Tous les champs requis (id, id_groupe, id_filiere) doivent être définis pour chaque stagiaire."
+                );
+                return;
+            }
 
-        <div className="side-content">
-          <div className="profile">
-            <div
-              className="profile-img bg-img"
-              style={{ backgroundImage: "url('.jpeg')" }}
-            ></div>
-            <h4>Espace</h4>
-            <small>Surveillance</small>
-          </div>
+            if (!selectedDate) {
+                console.error(
+                    "Veuillez sélectionner une date avant d'enregistrer l'absence."
+                );
+                return;
+            }
 
-          <div className="side-menu">
-            <ul>
-              <li>
-                <Link to="/surveillance" className="active">
-                  <span className="las la-home"></span>
-                  <small>Saisir absence</small>
-                </Link>
-              </li>
-              <li>
-                <Link to="/suivi_absence">
-                  <span className="las la-user-alt"></span>
-                  <small>Suivi absence</small>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+            if (!statusValues) {
+                setStatusValues(Array(stagiaires.length).fill("Présent"));
+            }
 
-      <div className="main-content">
-        <header>
-          <div className="header-content">
-            <label htmlFor="menu-toggle">
-              <span className="las la-bars"></span>
-            </label>
+            if (!nbr_absence) {
+                setNbr_absence(Array(stagiaires.length).fill(0));
+            }
 
-            <div className="header-menu">
-              <div className="user">
-                <div className="bg-img"></div>
+            if (!selectedFiliere || !selectedGroupe) {
+                console.error(
+                    "Veuillez sélectionner une filière et un groupe avant de récupérer les stagiaires."
+                );
+                return;
+            }
 
-                <span className="las la-power-off"></span>
-                <span>
-                  <button
-                    className="btn_logout"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      navigate("/");
-                    }}
-                  >
-                    Logout
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
+            const absencesData = stagiaires.map((stagiaire, index) => ({
+                status: statusValues[index],
+                nombre_absence_heure: parseInt(nbr_absence[index]),
+                date_absence: selectedDate,
+                id_stagiaire: stagiaire.id,
+                id_groupe: stagiaire.id_groupe,
+                id_filiere: stagiaire.id_filiere,
+            }));
 
-        <main>
-          <div className="page-header">
-            <h1>Saisir absence</h1>
-          </div>
-          <div className="page-header">
-            <div class="browse">
-              <label>
-                Filiere :
-                <select name="" id="">
-                  <option value="">DD</option>
-                </select>
-              </label>
-              <label>
-                Groupe :
-                <select name="" id="">
-                  <option value="">201</option>
-                </select>
-              </label>
-              <label>
-                Date :
-                <input type="date" class="record-search" />
-              </label>
-              <button className="btn_show_liste">
-                Afficher liste stagiaires
-              </button>
-            </div>
-          </div>
+            const response = await axios.post(
+                "http://localhost:8000/api/absences",
+                absencesData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-          <div className="page-content">
-            <div className="records table-responsive">
-              <div className="record-header">
-                <div className="browse">
-                  <input
-                    type="search"
-                    placeholder="Search"
-                    className="record-search"
-                  />
+            Swal.fire({
+                position: "center",
+                width: "fit-content",
+                title: "Absence est bien enregistrée",
+                showConfirmButton: false,
+                timer: 1500,
+                customClass: {
+                    title: "green-title",
+                },
+            });
+        } catch (error) {
+            console.error("Error saving absences:", error);
+            Swal.fire({
+                position: "center",
+                width: "fit-content",
+                title: "Une erreur s'est produite lors de l'enregistrement de l'absence",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    };
+
+    return (
+        <div className="allContainer">
+            <input type="checkbox" id="menu-toggle" />
+            <div className="sidebar">
+                <div className="side-header">
+                    <img src={OFPPT_Logo} alt="logo_ofppt" className="logo" />
                 </div>
-              </div>
-
-              <div>
-                <table width="100%">
-                  <thead>
-                    <tr>
-                      <th>
-                        <span>Nom</span>
-                      </th>
-                      <th>
-                        <span>Prénom</span>
-                      </th>
-                      <th>
-                        <span>Filiere</span>
-                      </th>
-                      <th>
-                        <span>Groupe</span>
-                      </th>
-                      <th>
-                        <span>Date Absence</span>
-                      </th>
-                      <th>
-                        <span>Status</span>
-                      </th>
-                      <th>
-                        <span>Nombre d'absence/heure</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div className="client">
-                          <div className="client-info">
-                            <h4>Khouchane</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Fatima</td>
-                      <td>DD</td>
-
-                      <td>201</td>
-                      <td>22/08/2004</td>
-                      <td>
-                        <select>
-                          <option>Absence</option>
-                        </select>
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        <input type="number" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div className="client">
-                          <div className="client-info">
-                            <h4>El asri</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Amina</td>
-                      <td>ID</td>
-                      <td>204</td>
-
-                      <td>10/01/1982</td>
-                      <td>
-                        <select>
-                          <option>Absence</option>
-                        </select>
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        <input type="number" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <div className="side-content">
+                    <div className="profile">
+                        <div className="profile-img bg-img"></div>
+                        <h4>Espace</h4>
+                        <small>Surveillance</small>
+                    </div>
+                    <div className="side-menu">
+                        <ul>
+                            <li>
+                                <Link to="/surveillance" className="active">
+                                    <span className="las la-home"></span>
+                                    <small>Saisir absence</small>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/suivi_absence">
+                                    <span className="las la-user-alt"></span>
+                                    <small>Suivi absence</small>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <button className="btn_save_absence" onClick={saveAbsence}>
-              Enregistrer absence
-            </button>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+
+            <div className="main-content">
+                <header>
+                    <div className="header-content">
+                        <label htmlFor="menu-toggle">
+                            <span className="las la-bars"></span>
+                        </label>
+                        <div className="header-menu">
+                            <div className="user">
+                                <div className="bg-img"></div>
+                                <span className="las la-power-off"></span>
+                                <span>
+                                    <button
+                                        className="btn_logout"
+                                        onClick={() => {
+                                            localStorage.removeItem("token");
+                                            navigate("/");
+                                        }}
+                                    >
+                                        Logout
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main>
+                    <div className="page-header">
+                        <h1>Saisir absence</h1>
+                    </div>
+                    <div className="page-header">
+                        <div className="browse">
+                            <label htmlFor="filiere">Filiere:</label>
+                            <select
+                                name="filiere"
+                                id="filiere"
+                                value={selectedFiliere}
+                                onChange={(e) => {
+                                    setSelectedFiliere(e.target.value);
+                                }}
+                            >
+                                <option>choisir filiere</option>
+                                {filieres.map((filiere) => (
+                                    <option key={filiere.id} value={filiere.id}>
+                                        {filiere.nom_filiere}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <label htmlFor="groupe">Groupe:</label>
+                            <select
+                                name="groupe"
+                                id="groupe"
+                                value={selectedGroupe}
+                                onChange={(e) => {
+                                    setSelectedGroupe(e.target.value);
+                                }}
+                            >
+                                <option>choisir groupe</option>
+                                {groupes.map((groupe) => (
+                                    <option key={groupe.id} value={groupe.id}>
+                                        {groupe.numero_groupe}
+                                    </option>
+                                ))}
+                            </select>
+                            <label>
+                                Date :
+                                <input
+                                    type="date"
+                                    className="record-search"
+                                    value={selectedDate}
+                                    onChange={(e) =>
+                                        setSelectedDate(e.target.value)
+                                    }
+                                />
+                            </label>
+                            <button
+                                className="btn_show_liste"
+                                onClick={fetchStagiaires}
+                            >
+                                Afficher liste stagiaires
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="page-content">
+                        <div className="records table-responsive">
+                            <div className="record-header">
+                                <div className="browse">
+                                    <input
+                                        type="search"
+                                        placeholder="Search"
+                                        className="record-search"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <span>CIN</span>
+                                            </th>
+                                            <th>
+                                                <span>Nom</span>
+                                            </th>
+                                            <th>
+                                                <span>Prénom</span>
+                                            </th>
+                                            <th>
+                                                <span>Filiere</span>
+                                            </th>
+                                            <th>
+                                                <span>Groupe</span>
+                                            </th>
+                                            <th>
+                                                <span>Date Absence</span>
+                                            </th>
+                                            <th>
+                                                <span>Status</span>
+                                            </th>
+                                            <th>
+                                                <span>
+                                                    Nombre d'absence/heure
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {stagiaires.map((stagiaire, index) => (
+                                            <tr key={stagiaire.id}>
+                                                <td>{stagiaire.cin}</td>
+                                                <td>{stagiaire.nom}</td>
+                                                <td>{stagiaire.prenom}</td>
+                                                <td>{stagiaire.id_filiere}</td>
+                                                <td>{stagiaire.id_groupe}</td>
+                                                <td>{selectedDate}</td>
+                                                <td>
+                                                    <select
+                                                        value={
+                                                            statusValues[index]
+                                                        }
+                                                        onChange={(e) => {
+                                                            const newStatusValues =
+                                                                [
+                                                                    ...statusValues,
+                                                                ];
+                                                            newStatusValues[
+                                                                index
+                                                            ] = e.target.value;
+                                                            setStatusValues(
+                                                                newStatusValues
+                                                            );
+                                                        }}
+                                                    >
+                                                        <option value="Présent">
+                                                            Présent
+                                                        </option>
+                                                        <option value="Absence">
+                                                            Absence
+                                                        </option>
+                                                        <option value="Absence justifiée">
+                                                            Absence justifiée
+                                                        </option>
+                                                    </select>
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="number"
+                                                        value={
+                                                            nbr_absence[index]
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleNbrAbsenceChange(
+                                                                e.target.value,
+                                                                index
+                                                            )
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button
+                            className="btn_save_absence"
+                            onClick={saveAbsence}
+                        >
+                            Enregistrer absence
+                        </button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
 };
 
 export default Surveillance;
