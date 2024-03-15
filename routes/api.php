@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ModifierAbsenceController;
 use App\Http\Controllers\SurveillanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,3 +40,6 @@ Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
 Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilter']);
 Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
 Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
+
+
+   

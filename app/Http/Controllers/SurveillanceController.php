@@ -69,4 +69,6 @@ public function checkAbsencesExistence($filiere, $groupe, $date)
         return response()->json(['exist' => $absencesExist]);
     }
 
+    
+
 }
