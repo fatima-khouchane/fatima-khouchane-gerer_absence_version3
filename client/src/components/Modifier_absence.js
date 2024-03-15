@@ -17,6 +17,7 @@ const Modifier_absence = () => {
     const [nbr_absence, setNbr_absence] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [absencesExist, setAbsencesExist] = useState(false);
+    const [absencesData, setAbsencesData] = useState([]);
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -62,34 +63,6 @@ const Modifier_absence = () => {
                         `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
                     );
                     const stagiairesData = response.data;
-
-                    // Fetch absence data for each stagiaire
-                    const absencesResponse = await axios.get(
-                        `http://localhost:8000/api/absences/${selectedFiliere}/${selectedGroupe}/${selectedDate}`
-                    );
-                    const absencesData = absencesResponse.data;
-
-                    const initialStatusValues = [];
-                    const initialNbrAbsences = [];
-
-                    // Iterate through stagiaires and set initial statusValues and nbr_absence
-                    stagiairesData.forEach((stagiaire) => {
-                        const absence = absencesData.find(
-                            (absence) => absence.id_stagiaire === stagiaire.id
-                        );
-                        if (absence) {
-                            initialStatusValues.push(absence.status);
-                            initialNbrAbsences.push(
-                                absence.nombre_absence_heure
-                            );
-                        } else {
-                            initialStatusValues.push("Présent");
-                            initialNbrAbsences.push(0);
-                        }
-                    });
-
-                    setStatusValues(initialStatusValues);
-                    setNbr_absence(initialNbrAbsences);
                     setStagiaires(stagiairesData);
                 }
             } catch (error) {
@@ -100,96 +73,15 @@ const Modifier_absence = () => {
         fetchStagiaires();
     }, [selectedFiliere, selectedGroupe, selectedDate]);
 
-    const handleNbrAbsenceChange = (value, index) => {
-        const updatedNbrAbsence = [...nbr_absence];
-        updatedNbrAbsence[index] = value;
-        setNbr_absence(updatedNbrAbsence);
-    };
-
-    const saveAbsence = async () => {
-        try {
-            const validStagiaires = stagiaires.every(
-                (stagiaire) =>
-                    stagiaire.id && stagiaire.id_groupe && stagiaire.id_filiere
-            );
-            if (!validStagiaires) {
-                console.error(
-                    "Tous les champs requis (id, id_groupe, id_filiere) doivent être définis pour chaque stagiaire."
-                );
-                return;
-            }
-
-            if (!selectedDate) {
-                console.error(
-                    "Veuillez sélectionner une date avant d'enregistrer l'absence."
-                );
-                return;
-            }
-
-            if (!statusValues) {
-                setStatusValues(Array(stagiaires.length).fill("Présent"));
-            }
-
-            if (!nbr_absence) {
-                setNbr_absence(Array(stagiaires.length).fill(0));
-            }
-
-            if (!selectedFiliere || !selectedGroupe) {
-                console.error(
-                    "Veuillez sélectionner une filière et un groupe avant de récupérer les stagiaires."
-                );
-                return;
-            }
-
-            const absencesData = stagiaires.map((stagiaire, index) => ({
-                status: statusValues[index],
-                nombre_absence_heure: parseInt(nbr_absence[index]),
-                date_absence: selectedDate,
-                id_stagiaire: stagiaire.id,
-                id_groupe: stagiaire.id_groupe,
-                id_filiere: stagiaire.id_filiere,
-            }));
-
-            const response = await axios.post(
-                "http://localhost:8000/api/absences",
-                absencesData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            Swal.fire({
-                position: "center",
-                width: "fit-content",
-                title: "Absence est bien enregistrée",
-                showConfirmButton: false,
-                timer: 1500,
-                customClass: {
-                    title: "green-title",
-                },
-            });
-        } catch (error) {
-            console.error("Error saving absences:", error);
-            Swal.fire({
-                position: "center",
-                width: "fit-content",
-                title: "Une erreur s'est produite lors de l'enregistrement de l'absence",
-                icon: "error",
-                showConfirmButton: false,
-                timer: 1500,
-            });
-        }
-    };
-
     useEffect(() => {
         const checkAbsencesExistence = async () => {
             try {
                 const response = await axios.get(
                     `http://localhost:8000/api/absences/exist/${selectedFiliere}/${selectedGroupe}/${selectedDate}`
                 );
-                setAbsencesExist(response.data.exist);
+                const { exist, absences } = response.data;
+                setAbsencesExist(exist);
+                setAbsencesData(absences);
             } catch (error) {
                 console.error("Error checking absences existence:", error);
             }
@@ -199,6 +91,88 @@ const Modifier_absence = () => {
             checkAbsencesExistence();
         }
     }, [selectedFiliere, selectedGroupe, selectedDate]);
+
+    useEffect(() => {
+        if (absencesExist && absencesData.length > 0) {
+            // Remplir les valeurs existantes de nombre d'absences par heure
+            const initialNbrAbsences = stagiaires.map((stagiaire) => {
+                const absence = absencesData.find(
+                    (a) => a.id_stagiaire === stagiaire.id
+                );
+                return absence ? absence.nombre_absence_heure : 0;
+            });
+            setNbr_absence(initialNbrAbsences);
+
+            // Remplir les valeurs existantes de statut
+            const initialStatusValues = stagiaires.map((stagiaire) => {
+                const absence = absencesData.find(
+                    (a) => a.id_stagiaire === stagiaire.id
+                );
+                return absence ? absence.status : "Présent";
+            });
+            setStatusValues(initialStatusValues);
+        }
+    }, [absencesExist, absencesData]);
+
+    const handleNbrAbsenceChange = (value, index) => {
+        const updatedNbrAbsence = [...nbr_absence];
+        updatedNbrAbsence[index] = value;
+        setNbr_absence(updatedNbrAbsence);
+    };
+
+    const saveAbsence = async () => {
+        try {
+            // Vérifier si des absences existent déjà pour la date sélectionnée
+            if (absencesExist) {
+                // Absences existent, procéder à la mise à jour
+                const updatedAbsencesData = stagiaires.map(
+                    (stagiaire, index) => ({
+                        id: absencesData[index].id, // L'ID de l'absence existante
+                        status: statusValues[index],
+                        nombre_absence_heure: parseInt(nbr_absence[index]),
+                        date_absence: selectedDate,
+                        id_stagiaire: stagiaire.id,
+                        id_groupe: stagiaire.id_groupe,
+                        id_filiere: stagiaire.id_filiere,
+                    })
+                );
+                console.log(updatedAbsencesData);
+                const response = await axios.put(
+                    "http://localhost:8000/api/absences/update",
+                    updatedAbsencesData,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                Swal.fire({
+                    position: "center",
+                    width: "fit-content",
+                    title: "Absences ont été mises à jour avec succès",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    customClass: {
+                        title: "green-title",
+                    },
+                });
+            } else {
+                // Absences n'existent pas, procéder à la création
+                // ... Code pour créer les nouvelles absences
+            }
+        } catch (error) {
+            console.error("Error saving absences:", error);
+            Swal.fire({
+                position: "center",
+                width: "fit-content",
+                title: "Une erreur s'est produite lors de la mise à jour des absences",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    };
 
     return (
         <div className="allContainer">
@@ -468,6 +442,16 @@ const Modifier_absence = () => {
                                                                             }
                                                                         />
                                                                     </td>
+                                                                    <input
+                                                                        type="hidden"
+                                                                        value={
+                                                                            absencesData[
+                                                                                index
+                                                                            ]
+                                                                                ?.id ||
+                                                                            ""
+                                                                        }
+                                                                    />
                                                                 </tr>
                                                             )
                                                         )}

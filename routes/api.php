@@ -42,4 +42,4 @@ Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
 Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
 
 
-   
+   Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);

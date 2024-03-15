@@ -61,14 +61,48 @@ class SurveillanceController extends Controller
 
 public function checkAbsencesExistence($filiere, $groupe, $date)
     {
-        $absencesExist = Absence::where('id_filiere', $filiere)
+        $absencesData = Absence::where('id_filiere', $filiere)
             ->where('id_groupe', $groupe)
             ->whereDate('date_absence', $date)
-            ->exists();
+            ->get();
 
-        return response()->json(['exist' => $absencesExist]);
+        return response()->json(['exist' => $absencesData->isNotEmpty(), 'absences' => $absencesData]);
     }
 
-    
+    public function updateAbsence(Request $request)
+{
+    $absencesData = $request->all();
+
+    try {
+        foreach ($absencesData as $absence) {
+            // Validation des données
+            if (!isset($absence['id'], $absence['status'], $absence['nombre_absence_heure'], $absence['date_absence'], $absence['id_stagiaire'], $absence['id_groupe'], $absence['id_filiere'])) {
+                return response()->json(['message' => 'Données d\'absence invalides'], 400);
+            }
+
+            // Recherche de l'absence à mettre à jour
+            $absenceToUpdate = Absence::find($absence['id']);
+
+            if (!$absenceToUpdate) {
+                return response()->json(['message' => 'Absence introuvable'], 404);
+            }
+
+            // Mise à jour de l'absence
+            $absenceToUpdate->status = $absence['status'];
+            $absenceToUpdate->nombre_absence_heure = $absence['nombre_absence_heure'];
+            $absenceToUpdate->date_absence = $absence['date_absence'];
+            $absenceToUpdate->id_stagiaire = $absence['id_stagiaire'];
+            $absenceToUpdate->id_groupe = $absence['id_groupe'];
+            $absenceToUpdate->id_filiere = $absence['id_filiere'];
+            $absenceToUpdate->save();
+        }
+
+        return response()->json(['message' => 'Absences mises à jour avec succès'], 200);
+    } catch (\Exception $e) {
+        // Gestion des erreurs
+        return response()->json(['message' => 'Une erreur est survenue lors de la mise à jour des absences'], 500);
+    }
+}
+
 
 }
