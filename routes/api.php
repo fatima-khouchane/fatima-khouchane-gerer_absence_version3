@@ -38,3 +38,4 @@ Route::get('/filieres', [SurveillanceController::class, 'getFiliere']);
 Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
 Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilter']);
 Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
+Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);

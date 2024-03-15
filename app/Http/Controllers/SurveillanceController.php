@@ -59,4 +59,14 @@ class SurveillanceController extends Controller
     }
 }
 
+public function checkAbsencesExistence($filiere, $groupe, $date)
+    {
+        $absencesExist = Absence::where('id_filiere', $filiere)
+            ->where('id_groupe', $groupe)
+            ->whereDate('date_absence', $date)
+            ->exists();
+
+        return response()->json(['exist' => $absencesExist]);
+    }
+
 }
