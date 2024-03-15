@@ -66,7 +66,3 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT). -->
 
 Application de gestion des absences des stagiaire de ISTA HAY SALAM.
-creér par:
-Fatima khouchane
-Oumaima boulaix
-Oumaima ihiss 
