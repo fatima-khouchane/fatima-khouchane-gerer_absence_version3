@@ -16,7 +16,7 @@ const Modifier_absence = () => {
     const [selectedDate, setSelectedDate] = useState("");
     const [nbr_absence, setNbr_absence] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [absencesExist, setAbsencesExist] = useState(false);
+    const [absencesExist, setAbsencesExist] = useState(true);
     const [absencesData, setAbsencesData] = useState([]);
 
     useEffect(() => {
@@ -428,7 +428,8 @@ const Modifier_absence = () => {
                                                                             value={
                                                                                 nbr_absence[
                                                                                     index
-                                                                                ]
+                                                                                ] ||
+                                                                                ""
                                                                             }
                                                                             onChange={(
                                                                                 e
@@ -442,16 +443,18 @@ const Modifier_absence = () => {
                                                                             }
                                                                         />
                                                                     </td>
-                                                                    <input
-                                                                        type="hidden"
-                                                                        value={
-                                                                            absencesData[
-                                                                                index
-                                                                            ]
-                                                                                ?.id ||
-                                                                            ""
-                                                                        }
-                                                                    />
+                                                                    <td>
+                                                                        <input
+                                                                            type="hidden"
+                                                                            value={
+                                                                                absencesData[
+                                                                                    index
+                                                                                ]
+                                                                                    ?.id ||
+                                                                                ""
+                                                                            }
+                                                                        />
+                                                                    </td>
                                                                 </tr>
                                                             )
                                                         )}
