@@ -24,7 +24,7 @@ const App = () => {
     const updateRole = (newRole) => {
         setRole(newRole);
     };
-    console.log(role);
+    // console.log(role);
 
     return (
         <Router>

@@ -299,12 +299,7 @@ const Surveillance = () => {
                             selectedGroupe &&
                             selectedDate &&
                             (absencesExist ? (
-                                <p
-                                    style={{
-                                        textAlign: "center",
-                                        color: "red",
-                                    }}
-                                >
+                                <p style={{ textAlign: "center",color:"red" }}>
                                     Absences de ce groupe et cette filière déjà
                                     saisies pour cette date.
                                 </p>

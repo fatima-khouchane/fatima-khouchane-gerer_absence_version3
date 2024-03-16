@@ -293,8 +293,10 @@ const Modifier_absence = () => {
 
                     <div className="page-content">
                         {selectedFiliere && selectedGroupe && selectedDate && (
+
                             <React.Fragment>
-                                {absencesExist ? (
+                                    {absencesExist ? (
+
                                     <div className="records table-responsive">
                                         <div className="record-header">
                                             <div className="browse">
@@ -473,7 +475,6 @@ const Modifier_absence = () => {
                                         pas encore saisir pour cette date.
                                     </p>
                                 )}
-
                                 <button
                                     className="btn_save_absence"
                                     onClick={saveAbsence}
@@ -481,6 +482,8 @@ const Modifier_absence = () => {
                                     Modifier absence
                                 </button>
                             </React.Fragment>
+                            
+
                         )}
                     </div>
                 </main>
