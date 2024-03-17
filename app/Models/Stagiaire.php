@@ -24,4 +24,10 @@ class Stagiaire extends Model
     {
         return $this->hasMany(Absence::class, 'id_stagiaire');
     }
+
+     public function sanctions()
+    {
+        return $this->hasMany(Sanction::class, 'id_stagiaire');
+    }
+
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ModifierAbsenceController;
+use App\Http\Controllers\SanctionController;
 use App\Http\Controllers\SurveillanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,3 +44,8 @@ Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController:
 
 
    Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);
+Route::get('/sanctions', [SanctionController::class, 'getSanctions']);
+
+// Route::get('/suivi_absence', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
+Route::get('/showSanction', [SanctionController::class, 'showSanction']);
+Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
