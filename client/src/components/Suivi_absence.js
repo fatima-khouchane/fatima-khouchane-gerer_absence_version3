@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import axios from "axios";
 import "../styles/styleSurveillance.css";
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const Suivi_absence = () => {
     const navigate = useNavigate();
     const [stagiaires, setStagiaires] = useState([]);
@@ -79,6 +80,22 @@ const Suivi_absence = () => {
         }
     }, [selectedFiliere, selectedGroupe, selectedPromotion]);
     console.log(stagiaires);
+    // generer pdf
+    const handlePrint = () => {
+        const doc = new jsPDF();
+
+        // Dessiner le logo
+        const imgData = OFPPT_Logo;
+        doc.addImage(imgData, "PNG", 9, 9, 18, 20); // (image, type, x, y, width, height)
+
+        // Ajouter le texte et le tableau ici
+        doc.text("Liste des stagiaires", 80, 60);
+        doc.autoTable({ html: "#my-table", startY: 80 });
+
+        // Télécharger le PDF
+        doc.save("tableau.pdf");
+    };
+
     return (
         <>
             <input type="checkbox" id="menu-toggle" />
@@ -210,7 +227,7 @@ const Suivi_absence = () => {
                                         />
                                     </div>
                                 </div>
-                                <table width="100%">
+                                <table width="100%" id="my-table">
                                     <thead>
                                         <tr>
                                             <th>Promotion</th>
@@ -274,7 +291,10 @@ const Suivi_absence = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            <button className="btn_save_absence">
+                            <button
+                                className="btn_save_absence"
+                                onClick={handlePrint}
+                            >
                                 Imprimer
                             </button>
                         </div>
