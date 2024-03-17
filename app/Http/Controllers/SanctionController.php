@@ -32,26 +32,35 @@ class SanctionController extends Controller
     }
 
 
-
-   public function getStagiairesWithAbsencesAndSanctions()
+public function getStagiairesWithAbsencesAndSanctions(Request $request)
 {
+    $id_filiere = $request->input('id_filiere');
+    $id_groupe = $request->input('id_groupe');
+    $promotion = $request->input('promotion');
+
     $stagiairesWithAbsencesAndSanctions = DB::table('stagiaires')
         ->join('absences', 'stagiaires.id', '=', 'absences.id_stagiaire')
         ->leftJoin('vue_sanctions', 'stagiaires.id', '=', 'vue_sanctions.id_stagiaire')
-        ->join('groupes', 'stagiaires.id_groupe', '=', 'groupes.id') // Jointure avec la table des groupes
-        ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id') // Jointure avec la table des filières
+        ->join('groupes', 'stagiaires.id_groupe', '=', 'groupes.id')
+        ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id')
         ->select(
+           'stagiaires.id',
+            'stagiaires.promotion',
             'stagiaires.nom',
             'stagiaires.prenom',
             'stagiaires.email',
             'stagiaires.telephone',
-            'groupes.numero_groupe as numero_groupe', // Sélectionnez le nom du groupe à partir de la jointure
-            'filieres.nom_filiere as nom_filiere', // Sélectionnez le nom de la filière à partir de la jointure
+            'groupes.numero_groupe as numero_groupe',
+            'filieres.nom_filiere as nom_filiere',
             DB::raw('SUM(absences.nombre_absence_heure) as total_absences'),
             'vue_sanctions.type_sanction'
         )
+        ->where('filieres.id', '=', $id_filiere)
+        ->where('groupes.id', '=', $id_groupe)
+        ->where('stagiaires.promotion', '=', $promotion)
         ->groupBy(
             'stagiaires.id',
+            'stagiaires.promotion',
             'stagiaires.nom',
             'stagiaires.prenom',
             'stagiaires.email',
@@ -64,5 +73,50 @@ class SanctionController extends Controller
 
     return response()->json(['stagiaires' => $stagiairesWithAbsencesAndSanctions]);
 }
+
+
+
+
+// public function getStagiairesWithAbsencesAndSanctions(Request $request)
+// {
+//     $nom_filiere = $request->input('nom_filiere');
+//     $numero_groupe = $request->input('numero_groupe');
+//     $promotion = $request->input('promotion');
+
+//     $stagiairesWithAbsencesAndSanctions = DB::table('stagiaires')
+//         ->join('absences', 'stagiaires.id', '=', 'absences.id_stagiaire')
+//         ->leftJoin('vue_sanctions', 'stagiaires.id', '=', 'vue_sanctions.id_stagiaire')
+//         ->join('groupes', 'stagiaires.id_groupe', '=', 'groupes.id')
+//         ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id')
+//         ->select(
+//            'stagiaires.id',
+//             'stagiaires.promotion',
+//             'stagiaires.nom',
+//             'stagiaires.prenom',
+//             'stagiaires.email',
+//             'stagiaires.telephone',
+//             'groupes.numero_groupe as numero_groupe',
+//             'filieres.nom_filiere as nom_filiere',
+//             DB::raw('SUM(absences.nombre_absence_heure) as total_absences'),
+//             'vue_sanctions.type_sanction'
+//         )
+//         ->where('filieres.nom_filiere', '=', $nom_filiere)
+//         ->where('groupes.numero_groupe', '=', $numero_groupe)
+//         ->where('stagiaires.promotion', '=', $promotion)
+//         ->groupBy(
+//             'stagiaires.id',
+//             'stagiaires.promotion',
+//             'stagiaires.nom',
+//             'stagiaires.prenom',
+//             'stagiaires.email',
+//             'stagiaires.telephone',
+//             'groupes.numero_groupe',
+//             'filieres.nom_filiere',
+//             'vue_sanctions.type_sanction'
+//         )
+//         ->get();
+
+//     return response()->json(['stagiaires' => $stagiairesWithAbsencesAndSanctions]);
+// }
 
 }

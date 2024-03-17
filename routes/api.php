@@ -48,3 +48,4 @@ Route::get('/sanctions', [SanctionController::class, 'getSanctions']);
 
 Route::get('/showSanction', [SanctionController::class, 'showSanction']);
 Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
+

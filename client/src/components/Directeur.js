@@ -1,221 +1,207 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/styleDashboard.css";
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
+import axios from "axios";
 import Swal from "sweetalert2";
 
+import "../styles/styleDashboard.css";
+
 const Directeur = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [stagiaires, setStagiaires] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      // try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/");
+                return;
+            }
+        };
+        fetchUserDetails();
+
+        axios
+            .get(
+                "http://localhost:8000/api/getStagiairesWithAbsencesAndSanctions"
+            )
+            .then((response) => {
+                setStagiaires(response.data.stagiaires);
+            })
+            .catch((error) => {
+                console.error(
+                    "Une erreur s'est produite lors de la récupération des données :",
+                    error
+                );
+            });
+    }, []);
+    console.log(stagiaires);
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
     };
-    fetchUserDetails();
-  }, []);
 
-  const generateReport = () => {
-    Swal.fire({
-      html: `
+    const generateReport = () => {
+        Swal.fire({
+            html: `
     <label for="Date_début">Date début :</label>
     <input type="date" id="Date_début">
     <br>
     <label for="Date_fin">Date Fin:</label>
     <input type="date" id="Date_fin">
   `,
-      // showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Create rapport", // Vérifiez que vous avez bien écrit "Create" ici
-      denyButtonText: `Cancel`,
-      // }).then((result) => {
-      //   if (result.isConfirmed) {
-      //     Swal.fire("Saved!", "", "success");
-      //   } else if (result.isDenied) {
-      //     Swal.fire("Changes are not saved", "", "info");
-      //   }
-    });
-  };
+            // showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Create rapport", // Vérifiez que vous avez bien écrit "Create" ici
+            denyButtonText: `Cancel`,
+            // }).then((result) => {
+            //   if (result.isConfirmed) {
+            //     Swal.fire("Saved!", "", "success");
+            //   } else if (result.isDenied) {
+            //     Swal.fire("Changes are not saved", "", "info");
+            //   }
+        });
+    };
 
-  return (
-    <>
-      <input type="checkbox" id="menu-toggle" />
-      <div className="sidebar">
-        <div className="side-header">
-          <img src={OFPPT_Logo} alt="logo_ofppt" className="logo" />
-        </div>
-
-        <div className="side-content">
-          <div className="profile">
-            <div
-              className="profile-img bg-img"
-              style={{ backgroundImage: "url('.jpeg')" }}
-            ></div>
-            <h4>Espace</h4>
-            <small>Directeur</small>
-          </div>
-
-          <div className="side-menu">
-            <ul>
-              <li>
-                <Link to="/directeur" className="active">
-                  <span className="las la-home"></span>
-                  <small>Dashboard</small>
-                </Link>
-              </li>
-              <li>
-                <Link to="/statistique">
-                  <span className="las la-user-alt"></span>
-                  <small>Statistique</small>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="main-content">
-        <header>
-          <div className="header-content">
-            <label htmlFor="menu-toggle">
-              <span className="las la-bars"></span>
-            </label>
-
-            <div className="header-menu">
-              <div className="user">
-                <div className="bg-img"></div>
-
-                <span className="las la-power-off"></span>
-                <span>
-                  <button
-                    className="btn_logout"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      navigate("/");
-                    }}
-                  >
-                    Logout
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main>
-          <div className="page-header">
-            <h1>Dashboard</h1>
-            {/* <!-- <small>Home / Dashboard</small> --> */}
-          </div>
-
-          <div className="page-content">
-            {/* <div className="analytics"> */}
-
-            <div className="page-header">
-              <div class="browse">
-                <label>
-                  Anneés Scolaire :
-                  <input type="text" class="record-search" placeholder="2024" />
-                </label>
-                <label>
-                  Filiere :
-                  <select name="" id="">
-                    <option value="">DD</option>
-                  </select>
-                </label>
-                <label>
-                  Groupe :
-                  <select name="" id="">
-                    <option value="">201</option>
-                  </select>
-                </label>
-
-                <button className="btn_show_liste">
-                  Afficher liste stagiaires
-                </button>
-              </div>
-            </div>
-
-            <div className="records table-responsive">
-              <div className="record-header">
-                <div className="browse">
-                  <input
-                    type="search"
-                    placeholder="Search"
-                    className="record-search"
-                  />
+    return (
+        <>
+            <input type="checkbox" id="menu-toggle" />
+            <div className="sidebar">
+                <div className="side-header">
+                    <img src={OFPPT_Logo} alt="logo_ofppt" className="logo" />
                 </div>
-              </div>
 
-              <div>
-                <table width="100%">
-                  <thead>
-                    <tr>
-                      <th>
-                        <span></span> Nom
-                      </th>
-                      <th>
-                        <span></span> Prénom
-                      </th>
-                      <th>
-                        <span></span> Date naissance
-                      </th>
-                      <th>
-                        <span></span> Somme d'absence/heure
-                      </th>
-                      <th>
-                        <span></span> Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div className="client">
-                          <div className="client-info">
-                            <h4>Andrew Bruno</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Fatima</td>
-                      <td>22/08/2004</td>
-                      <td>20</td>
-                      <td>
-                        <button id="btn-raport" onClick={generateReport}>
-                          générer rapport
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div className="client">
-                          <div className="client-info">
-                            <h4>El asri</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Amina</td>
-                      <td>10/01/1982</td>
-                      <td>42</td>
-                      <td>
-                        <button id="btn-raport" onClick={generateReport}>
-                          générer rapport
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <div className="side-content">
+                    <div className="profile">
+                        <div
+                            className="profile-img bg-img"
+                            style={{ backgroundImage: "url('.jpeg')" }}
+                        ></div>
+
+                        <h4>Espace</h4>
+                        <small>Directeur</small>
+                    </div>
+
+                    <div className="side-menu">
+                        <ul>
+                            <li>
+                                <Link to="/surveillance" className="active">
+                                    <span className="las la-home"></span>
+                                    <small>Saisir absence</small>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/suivi_absence">
+                                    <span className="las la-user-alt"></span>
+                                    <small>Suivi absence</small>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-          </div>
-        </main>
-      </div>
-    </>
-  );
+
+            <div className="main-content">
+                <header>
+                    <div className="header-content">
+                        <label htmlFor="menu-toggle">
+                            <span className="las la-bars"></span>
+                        </label>
+
+                        <div className="header-menu">
+                            <div className="user">
+                                <div className="bg-img"></div>
+
+                                <span className="las la-power-off"></span>
+                                <span>
+                                    <button
+                                        className="btn_logout"
+                                        onClick={() => {
+                                            localStorage.removeItem("token");
+                                            navigate("/");
+                                        }}
+                                    >
+                                        Déconnexion
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main>
+                    <div className="page-header">
+                        <h1>Suivi absence</h1>
+                    </div>
+
+                    <div className="page-content">
+                        <div className="records table-responsive">
+                            <div className="record-header">
+                                <div className="browse">
+                                    <input
+                                        type="search"
+                                        placeholder="Search"
+                                        className="record-search"
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                    />
+                                </div>
+                            </div>
+                            <table width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+
+                                        <th>Groupe</th>
+                                        <th>Filière</th>
+                                        <th>Total Absences</th>
+                                        <th>Type Sanction</th>
+                                        <th>Rapport</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {stagiaires
+                                        .filter((stagiaire) =>
+                                            `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
+                                                .toLowerCase()
+                                                .includes(
+                                                    searchTerm.toLowerCase()
+                                                )
+                                        )
+                                        .map((stagiaire, index) => (
+                                            <tr key={index}>
+                                                <td>{stagiaire.nom}</td>
+                                                <td>{stagiaire.prenom}</td>
+
+                                                <td>
+                                                    {stagiaire.numero_groupe}
+                                                </td>
+                                                <td>{stagiaire.nom_filiere}</td>
+                                                <td>
+                                                    {stagiaire.total_absences}
+                                                </td>
+                                                <td>
+                                                    {stagiaire.type_sanction}
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className="btn-raport"
+                                                        onClick={generateReport}
+                                                    >
+                                                        Email
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>{" "}
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </>
+    );
 };
 
 export default Directeur;
