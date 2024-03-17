@@ -230,7 +230,7 @@ const Modifier_absence = () => {
                                             navigate("/");
                                         }}
                                     >
-                                        Logout
+                                        Déconnexion
                                     </button>
                                 </span>
                             </div>
@@ -293,10 +293,8 @@ const Modifier_absence = () => {
 
                     <div className="page-content">
                         {selectedFiliere && selectedGroupe && selectedDate && (
-
                             <React.Fragment>
-                                    {absencesExist ? (
-
+                                {absencesExist ? (
                                     <div className="records table-responsive">
                                         <div className="record-header">
                                             <div className="browse">
@@ -482,8 +480,6 @@ const Modifier_absence = () => {
                                     Modifier absence
                                 </button>
                             </React.Fragment>
-                            
-
                         )}
                     </div>
                 </main>
