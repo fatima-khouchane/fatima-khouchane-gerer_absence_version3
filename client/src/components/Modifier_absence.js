@@ -428,8 +428,12 @@ const Modifier_absence = () => {
                                                                             value={
                                                                                 nbr_absence[
                                                                                     index
-                                                                                ] ||
-                                                                                ""
+                                                                                ] ===
+                                                                                0
+                                                                                    ? 0
+                                                                                    : nbr_absence[
+                                                                                          index
+                                                                                      ]
                                                                             }
                                                                             onChange={(
                                                                                 e

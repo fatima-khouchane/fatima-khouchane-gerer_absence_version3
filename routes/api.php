@@ -46,6 +46,5 @@ Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController:
    Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);
 Route::get('/sanctions', [SanctionController::class, 'getSanctions']);
 
-// Route::get('/suivi_absence', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
 Route::get('/showSanction', [SanctionController::class, 'showSanction']);
 Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
