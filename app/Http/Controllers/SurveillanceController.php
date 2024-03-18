@@ -36,12 +36,10 @@ class SurveillanceController extends Controller
 
     try {
         foreach ($absencesData as $absence) {
-            // Validation des données
             if (!isset($absence['status'], $absence['nombre_absence_heure'], $absence['date_absence'], $absence['id_stagiaire'], $absence['id_groupe'], $absence['id_filiere'])) {
                 return response()->json(['message' => 'Données d\'absence invalides'], 400);
             }
 
-            // Création de l'enregistrement d'absence
             Absence::create([
                 'status' => $absence['status'],
                 'nombre_absence_heure' => $absence['nombre_absence_heure'],
@@ -54,7 +52,6 @@ class SurveillanceController extends Controller
 
         return response()->json(['message' => 'Absences enregistrées avec succès'], 200);
     } catch (\Exception $e) {
-        // Gestion des erreurs
         return response()->json(['message' => 'Une erreur est survenue lors de l\'enregistrement des absences'], 500);
     }
 }
@@ -75,19 +72,16 @@ public function checkAbsencesExistence($filiere, $groupe, $date)
 
     try {
         foreach ($absencesData as $absence) {
-            // Validation des données
             if (!isset($absence['id'], $absence['status'], $absence['nombre_absence_heure'], $absence['date_absence'], $absence['id_stagiaire'], $absence['id_groupe'], $absence['id_filiere'])) {
                 return response()->json(['message' => 'Données d\'absence invalides'], 400);
             }
 
-            // Recherche de l'absence à mettre à jour
             $absenceToUpdate = Absence::find($absence['id']);
 
             if (!$absenceToUpdate) {
                 return response()->json(['message' => 'Absence introuvable'], 404);
             }
 
-            // Mise à jour de l'absence
             $absenceToUpdate->status = $absence['status'];
             $absenceToUpdate->nombre_absence_heure = $absence['nombre_absence_heure'];
             $absenceToUpdate->date_absence = $absence['date_absence'];
@@ -99,10 +93,33 @@ public function checkAbsencesExistence($filiere, $groupe, $date)
 
         return response()->json(['message' => 'Absences mises à jour avec succès'], 200);
     } catch (\Exception $e) {
-        // Gestion des erreurs
         return response()->json(['message' => 'Une erreur est survenue lors de la mise à jour des absences'], 500);
     }
 }
 
+
+
+
+ public function getFiliereById($id)
+    {
+        $filiere = Filiere::find($id);
+
+        if (!$filiere) {
+            return response()->json(['error' => 'Filière non trouvée'], 404);
+        }
+
+        return response()->json($filiere);
+    }
+
+    public function getGroupeById($id)
+    {
+        $groupe = Groupe::find($id);
+
+        if (!$groupe) {
+            return response()->json(['error' => 'Groupe non trouvé'], 404);
+        }
+
+        return response()->json($groupe);
+    }   
 
 }

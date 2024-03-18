@@ -552,7 +552,7 @@ table tbody tr {
 }
 
 .no-scroll-image {
-    max-height: none !important; /* Désactive le scroll vertical de l'image */
+    max-height: none !important; 
 }
 
 .green-title {

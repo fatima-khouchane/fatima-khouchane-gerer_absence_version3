@@ -49,3 +49,6 @@ Route::get('/sanctions', [SanctionController::class, 'getSanctions']);
 Route::get('/showSanction', [SanctionController::class, 'showSanction']);
 Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class, 'getStagiairesWithAbsencesAndSanctions']);
 
+
+    Route::get('/filieres/{id}', [SurveillanceController::class, 'getFiliereById']);
+    Route::get('/groupes/{id}', [SurveillanceController::class, 'getGroupeById']);

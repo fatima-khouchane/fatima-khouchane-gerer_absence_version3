@@ -14,6 +14,7 @@ const Suivi_absence = () => {
     const [selectedFiliere, setSelectedFiliere] = useState("");
     const [selectedGroupe, setSelectedGroupe] = useState("");
     const [selectedPromotion, setSelectedPromotion] = useState("");
+    const [promotionShow, setPromotionShow] = useState("");
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -58,6 +59,7 @@ const Suivi_absence = () => {
 
     useEffect(() => {
         if (selectedFiliere && selectedGroupe && selectedPromotion) {
+            setPromotionShow(selectedPromotion);
             const fetchStagiaires = async () => {
                 try {
                     const response = await axios.get(
@@ -79,20 +81,55 @@ const Suivi_absence = () => {
             fetchStagiaires();
         }
     }, [selectedFiliere, selectedGroupe, selectedPromotion]);
-    console.log(stagiaires);
-    // generer pdf
-    const handlePrint = () => {
+
+    const handlePrint = async () => {
         const doc = new jsPDF();
 
-        // Dessiner le logo
         const imgData = OFPPT_Logo;
-        doc.addImage(imgData, "PNG", 9, 9, 18, 20); // (image, type, x, y, width, height)
+        doc.addImage(imgData, "PNG", 9, 9, 18, 20);
+        doc.text(`Promotion: ${promotionShow}`, 20, 40);
 
-        // Ajouter le texte et le tableau ici
-        doc.text("Liste des stagiaires", 80, 60);
-        doc.autoTable({ html: "#my-table", startY: 80 });
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/filieres/${selectedFiliere}`
+            );
+            const selectedFiliereName = response.data.nom_filiere;
+            const responseGroupe = await axios.get(
+                `http://localhost:8000/api/groupes/${selectedGroupe}`
+            );
+            const selectedGroupeName = responseGroupe.data.numero_groupe;
 
-        // Télécharger le PDF
+            doc.text(`Filière: ${selectedFiliereName}`, 20, 50);
+            doc.text(`Groupe: ${selectedGroupeName}`, 20, 60);
+            console.log(promotionShow);
+        } catch (error) {
+            console.error("Error fetching filiere name ans froupe:", error);
+            doc.text("Filière: Non trouvé", 10, 20);
+        }
+
+        const tableData = stagiaires.map((stagiaire) => [
+            stagiaire.nom,
+            stagiaire.prenom,
+            stagiaire.telephone,
+            stagiaire.total_absences,
+            stagiaire.type_sanction,
+        ]);
+
+        doc.autoTable({
+            head: [
+                [
+                    "Nom",
+                    "Prénom",
+                    "Telephone",
+
+                    "Total Absences",
+                    "Type Sanction",
+                ],
+            ],
+            body: tableData,
+            startY: 70,
+        });
+
         doc.save("tableau.pdf");
     };
 
