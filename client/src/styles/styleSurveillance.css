@@ -552,13 +552,64 @@ table tbody tr {
 }
 
 .no-scroll-image {
-    max-height: none !important; 
+    max-height: none !important;
 }
 
 .green-title {
     color: green !important;
 }
 
+Styles for the modal .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Styles for the modal content */
+.modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 400px;
+    max-width: 90%;
+}
+
+/* Close button */
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* Additional styles for form elements */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input,
+textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
 
 @media only screen and (max-width: 1200px) {
     .analytics {

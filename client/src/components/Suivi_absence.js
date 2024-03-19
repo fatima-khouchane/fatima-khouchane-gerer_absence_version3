@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import axios from "axios";
 import "../styles/styleSurveillance.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 const Suivi_absence = () => {
     const navigate = useNavigate();
     const [stagiaires, setStagiaires] = useState([]);
@@ -15,6 +17,78 @@ const Suivi_absence = () => {
     const [selectedGroupe, setSelectedGroupe] = useState("");
     const [selectedPromotion, setSelectedPromotion] = useState("");
     const [promotionShow, setPromotionShow] = useState("");
+
+    const [message, setMessage] = useState("");
+    const MySwal = withReactContent(Swal);
+    const [selectedStagiaire, setSelectedStagiaire] = useState({});
+
+    const emailRef = useRef(null);
+    const subjectRef = useRef(null);
+    const contentRef = useRef(null);
+    const sendEmail = (recipientEmail, stagiaire) => {
+        setSelectedStagiaire(stagiaire);
+
+        MySwal.fire({
+            title: "Contacter stagiaire ",
+            showCancelButton: true,
+            confirmButtonText: "Envoyer",
+            cancelButtonText: "Pas envoyer",
+            html: (
+                <form id="emailForm">
+                    <input
+                        ref={emailRef}
+                        type="email"
+                        placeholder="Recipient Email"
+                        defaultValue={recipientEmail}
+                        required
+                    />
+                    <input
+                        ref={subjectRef}
+                        type="text"
+                        placeholder="Subject"
+                        required
+                    />
+
+                    <textarea ref={contentRef} placeholder="Content" required />
+                </form>
+            ),
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = {
+                    email: emailRef.current.value,
+                    subject: subjectRef.current.value,
+                    content: contentRef.current.value,
+                };
+                send(formData);
+            }
+        });
+    };
+
+    const send = async (formData) => {
+        try {
+            const response = await axios.post(
+                "http://localhost:8000/api/send-email",
+                formData
+            );
+            setMessage(response.data.message);
+            MySwal.fire({
+                icon: "success",
+                title: "Email sent successfully!",
+                showConfirmButton: false,
+                timer: 1500, // Fermer l'alerte après 1.5 secondes
+            });
+        } catch (error) {
+            setMessage("An error occurred while sending the email.");
+            console.error(error);
+            MySwal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "An error occurred while sending the email.",
+            });
+        }
+    };
+
+    //
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -319,7 +393,15 @@ const Suivi_absence = () => {
                                                         }
                                                     </td>
                                                     <td>
-                                                        <button className="btn_email">
+                                                        <button
+                                                            className="btn_email"
+                                                            onClick={() =>
+                                                                sendEmail(
+                                                                    stagiaire.email,
+                                                                    stagiaire
+                                                                )
+                                                            }
+                                                        >
                                                             Email
                                                         </button>
                                                     </td>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ModifierAbsenceController;
 use App\Http\Controllers\SanctionController;
 use App\Http\Controllers\SurveillanceController;
@@ -52,3 +53,6 @@ Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class,
 
     Route::get('/filieres/{id}', [SurveillanceController::class, 'getFiliereById']);
     Route::get('/groupes/{id}', [SurveillanceController::class, 'getGroupeById']);
+
+
+    Route::post('/send-email', [EmailController::class,'sendEmail']);
