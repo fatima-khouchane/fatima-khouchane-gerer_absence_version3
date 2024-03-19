@@ -75,15 +75,15 @@ const Suivi_absence = () => {
                 icon: "success",
                 title: "Email sent successfully!",
                 showConfirmButton: false,
-                timer: 1500, // Fermer l'alerte après 1.5 secondes
+                timer: 1500, 
             });
         } catch (error) {
-            setMessage("An error occurred while sending the email.");
+            setMessage("Error lors de l'envoie de email.");
             console.error(error);
             MySwal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "An error occurred while sending the email.",
+                text: "Error lors de l'envoie de email.",
             });
         }
     };
