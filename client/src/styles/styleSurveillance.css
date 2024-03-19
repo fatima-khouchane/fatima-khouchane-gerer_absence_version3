@@ -414,11 +414,27 @@ select {
 }
 
 .browse input {
-    width: 150px;
+    width: 190px;
 }
 
 .browse select {
-    width: 100px;
+    width: 190px;
+}
+
+.status_select,
+.nbr_absence {
+    width: 170px;
+    height: 35px;
+    border: 1px solid #b0b0b0;
+    border-radius: 3px;
+    /* display: inline-block; */
+    /* width: 75px; */
+    padding: 0rem 0.5rem;
+    margin-right: 0.8rem;
+    color: #666;
+}
+.nbr_absence {
+    margin-top: 5px;
 }
 
 .table-responsive {
@@ -514,9 +530,18 @@ table tbody tr {
 }
 
 .browse select,
-.browse input[type="date"],
 .btn_show_liste {
     height: 40px;
+    padding: 0 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 1rem;
+}
+.browse input[type="date"],
+.browse input[type="text"] {
+    height: 40px;
+    margin-top: 15px;
     padding: 0 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;

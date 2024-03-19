@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/styleLogin.css"; // Importation du fichier CSS
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importation des icônes
 
 const Login = ({ updateRole }) => {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Login = ({ updateRole }) => {
         email: "",
         password: "",
     });
+    const [showPassword, setShowPassword] = useState(false); // State pour afficher/masquer le mot de passe
     const [validationErrors, setValidationErrors] = useState({});
 
     const handleChange = (e) => {
@@ -34,7 +36,7 @@ const Login = ({ updateRole }) => {
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify({ role: role }));
 
-            updateRole(role); // Update role in App.js
+            updateRole(role); // Mise à jour du rôle dans App.js
 
             if (role === "Directeur") {
                 navigate("/directeur");
@@ -56,6 +58,9 @@ const Login = ({ updateRole }) => {
             }
         }
     };
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     return (
         <div className="body">
@@ -64,12 +69,6 @@ const Login = ({ updateRole }) => {
                     <h2>Gestion d'absence des stagiaires</h2>
                     <img src={OFPPT_Logo} alt="ista_logo" className="logo" />
                     <form method="POST" onSubmit={handleSubmit}>
-                        {validationErrors.email && (
-                            <span className="error-message">
-                                {validationErrors.email[0]}
-                            </span>
-                        )}
-
                         <input
                             type="text"
                             name="email"
@@ -77,18 +76,21 @@ const Login = ({ updateRole }) => {
                             onChange={handleChange}
                         />
 
-                        {validationErrors.password && (
-                            <span className="error-message">
-                                {validationErrors.password[0]}
-                            </span>
-                        )}
-
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter Password"
-                            onChange={handleChange}
-                        />
+                        <div className="password-input-container">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                placeholder="Enter Password"
+                                onChange={handleChange}
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="toggle-password"
+                            >
+                                {showPassword ? <FaEye /> : <FaEyeSlash />}
+                            </button>
+                        </div>
 
                         <button type="submit">log in </button>
                     </form>

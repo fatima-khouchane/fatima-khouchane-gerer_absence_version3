@@ -1,0 +1,59 @@
+.raport-container {
+    padding: 20px;
+}
+
+.summary {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.absences-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.absences-table th,
+.absences-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+.absences-table th {
+    background-color: #f2f2f2;
+}
+
+.print-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.centered-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn_retour {
+    padding: 13px;
+}
+
+.return-link {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.return-link:hover,
+.print-button:hover {
+    background-color: #88c0ff;
+}
+

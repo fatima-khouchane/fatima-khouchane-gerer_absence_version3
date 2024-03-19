@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import axios from "axios";
-import Swal from "sweetalert2";
-
 import "../styles/styleDashboard.css";
+import OFPPT_Logo from "../images/OFPPT_Logo.png";
+import Swal from "sweetalert2";
 
 const Directeur = () => {
     const navigate = useNavigate();
+    const [anneeScolaire, setAnneeScolaire] = useState("");
     const [stagiaires, setStagiaires] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const [date_debut, setdate_debut] = useState("");
+    const [date_fin, setdate_fin] = useState("");
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -19,48 +21,57 @@ const Directeur = () => {
                 return;
             }
         };
-        fetchUserDetails();
-
-        axios
-            .get(
-                "http://localhost:8000/api/getStagiairesWithAbsencesAndSanctions"
-            )
-            .then((response) => {
-                setStagiaires(response.data.stagiaires);
-            })
-            .catch((error) => {
-                console.error(
-                    "Une erreur s'est produite lors de la récupération des données :",
-                    error
+        const fetchStagiaires = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:8000/api/getStagiairesDashboard`,
+                    {
+                        params: { promotion: anneeScolaire },
+                    }
                 );
-            });
-    }, []);
-    console.log(stagiaires);
+                if (response.status === 200) {
+                    setStagiaires(response.data.stagiaires);
+                    setDataLoaded(true);
+                } else {
+                    throw new Error("Failed to fetch data");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        if (anneeScolaire !== "") {
+            fetchStagiaires();
+        }
+        fetchUserDetails();
+    }, [anneeScolaire]);
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
+    const generateReport = (id_stagiaire) => {
+        console.log("ID Stagiaire:", id_stagiaire);
 
-    const generateReport = () => {
         Swal.fire({
             html: `
-    <label for="Date_début">Date début :</label>
-    <input type="date" id="Date_début">
-    <br>
-    <label for="Date_fin">Date Fin:</label>
-    <input type="date" id="Date_fin">
-  `,
-            // showDenyButton: true,
+            <label for="Date_début">Date début :</label>
+            <input type="date" id="Date_début" >
+            <br>
+            <label for="Date_fin">Date Fin:</label>
+            <input type="date" id="Date_fin" >
+        `,
             showCancelButton: true,
-            confirmButtonText: "Create rapport", // Vérifiez que vous avez bien écrit "Create" ici
+            confirmButtonText: "Create rapport",
             denyButtonText: `Cancel`,
-            // }).then((result) => {
-            //   if (result.isConfirmed) {
-            //     Swal.fire("Saved!", "", "success");
-            //   } else if (result.isDenied) {
-            //     Swal.fire("Changes are not saved", "", "info");
-            //   }
+            allowOutsideClick: false, // Empêche la fermeture lorsque l'utilisateur clique en dehors du pop-up
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const date_debut = document.getElementById("Date_début").value;
+                const date_fin = document.getElementById("Date_fin").value;
+                // Rediriger vers un autre composant après la création du rapport
+                navigate(`/rapport/${id_stagiaire}/${date_debut}/${date_fin}`);
+            }
         });
+    };
+
+    const handleAnneeScolaireChange = (e) => {
+        setAnneeScolaire(e.target.value);
     };
 
     return (
@@ -77,7 +88,6 @@ const Directeur = () => {
                             className="profile-img bg-img"
                             style={{ backgroundImage: "url('.jpeg')" }}
                         ></div>
-
                         <h4>Espace</h4>
                         <small>Directeur</small>
                     </div>
@@ -85,15 +95,15 @@ const Directeur = () => {
                     <div className="side-menu">
                         <ul>
                             <li>
-                                <Link to="/surveillance" className="active">
+                                <Link to="/directeur" className="active">
                                     <span className="las la-home"></span>
-                                    <small>Saisir absence</small>
+                                    <small>Dashboard</small>
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/suivi_absence">
+                                <Link to="/statistique">
                                     <span className="las la-user-alt"></span>
-                                    <small>Suivi absence</small>
+                                    <small>Statistique</small>
                                 </Link>
                             </li>
                         </ul>
@@ -131,7 +141,7 @@ const Directeur = () => {
 
                 <main>
                     <div className="page-header">
-                        <h1>Suivi absence</h1>
+                        <h1>Dashboard</h1>
                     </div>
 
                     <div className="page-content">
@@ -142,60 +152,75 @@ const Directeur = () => {
                                         type="search"
                                         placeholder="Search"
                                         className="record-search"
-                                        value={searchTerm}
-                                        onChange={handleSearchChange}
+                                    />
+                                    <input
+                                        type="search"
+                                        placeholder="Année scolaire"
+                                        className="record-search"
+                                        value={anneeScolaire}
+                                        onChange={handleAnneeScolaireChange}
                                     />
                                 </div>
                             </div>
-                            <table width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Nom</th>
-                                        <th>Prénom</th>
-
-                                        <th>Groupe</th>
-                                        <th>Filière</th>
-                                        <th>Total Absences</th>
-                                        <th>Type Sanction</th>
-                                        <th>Rapport</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {stagiaires
-                                        .filter((stagiaire) =>
-                                            `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
-                                                .toLowerCase()
-                                                .includes(
-                                                    searchTerm.toLowerCase()
-                                                )
-                                        )
-                                        .map((stagiaire, index) => (
-                                            <tr key={index}>
-                                                <td>{stagiaire.nom}</td>
-                                                <td>{stagiaire.prenom}</td>
-
-                                                <td>
-                                                    {stagiaire.numero_groupe}
-                                                </td>
-                                                <td>{stagiaire.nom_filiere}</td>
-                                                <td>
-                                                    {stagiaire.total_absences}
-                                                </td>
-                                                <td>
-                                                    {stagiaire.type_sanction}
-                                                </td>
-                                                <td>
-                                                    <button
-                                                        className="btn-raport"
-                                                        onClick={generateReport}
-                                                    >
-                                                        Email
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>{" "}
+                            {anneeScolaire && dataLoaded ? (
+                                stagiaires.length > 0 ? (
+                                    <div>
+                                        <table width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nom</th>
+                                                    <th>Prénom</th>
+                                                    <th>Date naissance</th>
+                                                    <th>
+                                                        Somme d'absence/heure
+                                                    </th>
+                                                    <th>type sanctions</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stagiaires.map((stagiaire) => (
+                                                    <tr key={stagiaire.id}>
+                                                        <td>{stagiaire.nom}</td>
+                                                        <td>
+                                                            {stagiaire.prenom}
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                stagiaire.date_naissance
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                stagiaire.total_absences
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                stagiaire.total_absences
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                id="btn-raport"
+                                                                onClick={() =>
+                                                                    generateReport(
+                                                                        stagiaire.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Générer rapport
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p>Aucun stagiaire trouvé.</p>
+                                )
+                            ) : null}
                         </div>
                     </div>
                 </main>

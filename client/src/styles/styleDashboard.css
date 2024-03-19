@@ -510,6 +510,30 @@ table tbody tr {
     cursor: pointer;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input,
+textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.browse input[type="date"] {
+    height: 40px;
+    margin-top: 15px;
+    padding: 0 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 1rem;
+}
+
 @media only screen and (max-width: 1200px) {
     .analytics {
         grid-template-columns: repeat(2, 1fr);

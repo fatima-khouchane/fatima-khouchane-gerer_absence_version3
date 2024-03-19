@@ -9,6 +9,7 @@ import NotFound from "./components/NotFound";
 import Suivi_absence from "./components/Suivi_absence";
 import Statistique from "./components/Statistique";
 import Modifier_absence from "./components/Modifier_absence";
+import Raport from "./components/Raport";
 
 const App = () => {
     const [role, setRole] = useState(null);
@@ -44,11 +45,16 @@ const App = () => {
                             path="/modifier_absence"
                             element={<Modifier_absence />}
                         />
+                        <Route path="/rapport" element={<Raport />} />
                     </>
                 ) : role === "Directeur" ? (
                     <>
                         <Route path="/directeur" element={<Directeur />} />
                         <Route path="/statistique" element={<Statistique />} />
+                        <Route
+                            path="/rapport/:id_stagiaire/:date_debut/:date_fin"
+                            element={<Raport />}
+                        />
                     </>
                 ) : null}
                 <Route path="*" element={<NotFound />} />

@@ -284,7 +284,7 @@ const Surveillance = () => {
                                 Date :
                                 <input
                                     type="date"
-                                    className="record-search"
+                                    // className="record-search"
                                     value={selectedDate}
                                     onChange={(e) =>
                                         setSelectedDate(e.target.value)
@@ -419,6 +419,7 @@ const Surveillance = () => {
                                                                                     newStatusValues
                                                                                 );
                                                                             }}
+                                                                            className="status_select"
                                                                         >
                                                                             <option value="Présent">
                                                                                 Présent
@@ -455,6 +456,7 @@ const Surveillance = () => {
                                                                                     index
                                                                                 )
                                                                             }
+                                                                            className="nbr_absence"
                                                                         />
                                                                     </td>
                                                                 </tr>

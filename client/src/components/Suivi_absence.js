@@ -32,7 +32,7 @@ const Suivi_absence = () => {
             title: "Contacter stagiaire ",
             showCancelButton: true,
             confirmButtonText: "Envoyer",
-            cancelButtonText: "Pas envoyer",
+            cancelButtonText: "Cancel",
             html: (
                 <form id="emailForm">
                     <input
@@ -52,6 +52,7 @@ const Suivi_absence = () => {
                     <textarea ref={contentRef} placeholder="Content" required />
                 </form>
             ),
+            allowOutsideClick: false, // Empêche la fermeture lorsque l'utilisateur clique en dehors du pop-up
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = {
@@ -60,6 +61,8 @@ const Suivi_absence = () => {
                     content: contentRef.current.value,
                 };
                 send(formData);
+            } else if (result.dismiss === MySwal.DismissReason.cancel) {
+                // Ne rien faire ici, la popup restera ouverte
             }
         });
     };
@@ -72,17 +75,17 @@ const Suivi_absence = () => {
             );
             setMessage(response.data.message);
             MySwal.fire({
-                icon: "success",
                 title: "Email sent successfully!",
                 showConfirmButton: false,
-                timer: 1500, 
+                timer: 1500,
+                customClass: {
+                    title: "green-title",
+                },
             });
         } catch (error) {
             setMessage("Error lors de l'envoie de email.");
             console.error(error);
             MySwal.fire({
-                icon: "error",
-                title: "Oops...",
                 text: "Error lors de l'envoie de email.",
             });
         }
@@ -160,8 +163,13 @@ const Suivi_absence = () => {
         const doc = new jsPDF();
 
         const imgData = OFPPT_Logo;
-        doc.addImage(imgData, "PNG", 9, 9, 18, 20);
-        doc.text(`Promotion: ${promotionShow}`, 20, 40);
+        doc.addImage(imgData, "PNG", 14, 14, 18, 20);
+        doc.setFontSize(12); // Définit la taille de la police à 12 points
+
+        doc.text("Office de la formation professionnelle", 60, 20);
+        doc.text("et de la promotion du travail", 60, 26);
+
+        doc.text(`Promotion: ${promotionShow}`, 14, 50);
 
         try {
             const response = await axios.get(
@@ -173,8 +181,8 @@ const Suivi_absence = () => {
             );
             const selectedGroupeName = responseGroupe.data.numero_groupe;
 
-            doc.text(`Filière: ${selectedFiliereName}`, 20, 50);
-            doc.text(`Groupe: ${selectedGroupeName}`, 20, 60);
+            doc.text(`Filière: ${selectedFiliereName}`, 14, 60);
+            doc.text(`Groupe: ${selectedGroupeName}`, 14, 70);
             console.log(promotionShow);
         } catch (error) {
             console.error("Error fetching filiere name ans froupe:", error);
@@ -201,7 +209,7 @@ const Suivi_absence = () => {
                 ],
             ],
             body: tableData,
-            startY: 70,
+            startY: 90,
         });
 
         doc.save("tableau.pdf");
@@ -346,8 +354,8 @@ const Suivi_absence = () => {
                                             <th>Prénom</th>
                                             <th>Email</th>
                                             <th>Téléphone</th>
-                                            <th>Groupe</th>
-                                            <th>Filière</th>
+                                            {/* <th>Groupe</th>
+                                            <th>Filière</th> */}
                                             <th>Total Absences</th>
                                             <th>Type Sanction</th>
                                             <th>Contacter stagiaire</th>
@@ -374,14 +382,14 @@ const Suivi_absence = () => {
                                                     <td>
                                                         {stagiaire.telephone}
                                                     </td>
-                                                    <td>
+                                                    {/* <td>
                                                         {
                                                             stagiaire.numero_groupe
                                                         }
                                                     </td>
                                                     <td>
                                                         {stagiaire.nom_filiere}
-                                                    </td>
+                                                    </td> */}
                                                     <td>
                                                         {
                                                             stagiaire.total_absences
