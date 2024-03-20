@@ -13,9 +13,16 @@ const Suivi_absence = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filieres, setFilieres] = useState([]);
     const [groupes, setGroupes] = useState([]);
+    const [error, setError] = useState("");
+
     const [selectedFiliere, setSelectedFiliere] = useState("");
     const [selectedGroupe, setSelectedGroupe] = useState("");
-    const [selectedPromotion, setSelectedPromotion] = useState("");
+    const getCurrentYear = () => {
+        return new Date().getFullYear().toString();
+    };
+    const [selectedPromotion, setSelectedPromotion] = useState(
+        getCurrentYear()
+    );
     const [promotionShow, setPromotionShow] = useState("");
 
     const [message, setMessage] = useState("");
@@ -149,9 +156,15 @@ const Suivi_absence = () => {
                             },
                         }
                     );
-                    setStagiaires(response.data.stagiaires);
+                    if (response.status === 200) {
+                        setStagiaires(response.data.stagiaires);
+                    } else {
+                        throw new Error("Failed to fetch data");
+                    }
                 } catch (error) {
-                    console.error("Error fetching stagiaires:", error);
+                    setError(
+                        "Aucune donnée disponible pour l'année scolaire spécifiée."
+                    );
                 }
             };
 
@@ -332,100 +345,150 @@ const Suivi_absence = () => {
                             </label>
                         </div>
                     </div>
-                    {selectedFiliere && selectedGroupe && selectedPromotion && (
-                        <div className="page-content">
-                            <div className="records table-responsive">
-                                <div className="record-header">
-                                    <div className="browse">
-                                        <input
-                                            type="search"
-                                            placeholder="Search"
-                                            className="record-search"
-                                            value={searchTerm}
-                                            onChange={handleSearchChange}
-                                        />
-                                    </div>
-                                </div>
-                                <table width="100%" id="my-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Promotion</th>
-                                            <th>Nom</th>
-                                            <th>Prénom</th>
-                                            <th>Email</th>
-                                            <th>Téléphone</th>
-                                            {/* <th>Groupe</th>
-                                            <th>Filière</th> */}
-                                            <th>Total Absences</th>
-                                            <th>Type Sanction</th>
-                                            <th>Contacter stagiaire</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {stagiaires
-                                            .filter((stagiaire) =>
-                                                `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
-                                                    .toLowerCase()
-                                                    .includes(
-                                                        searchTerm.toLowerCase()
-                                                    )
-                                            )
-                                            .map((stagiaire, index) => (
-                                                <tr key={index}>
-                                                    <td>
-                                                        {stagiaire.promotion}
-                                                    </td>
-
-                                                    <td>{stagiaire.nom}</td>
-                                                    <td>{stagiaire.prenom}</td>
-                                                    <td>{stagiaire.email}</td>
-                                                    <td>
-                                                        {stagiaire.telephone}
-                                                    </td>
-                                                    {/* <td>
-                                                        {
-                                                            stagiaire.numero_groupe
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        {stagiaire.nom_filiere}
-                                                    </td> */}
-                                                    <td>
-                                                        {
-                                                            stagiaire.total_absences
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        {
-                                                            stagiaire.type_sanction
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        <button
-                                                            className="btn_email"
-                                                            onClick={() =>
-                                                                sendEmail(
-                                                                    stagiaire.email,
-                                                                    stagiaire
-                                                                )
+                    <>
+                        {selectedFiliere &&
+                            selectedGroupe &&
+                            selectedPromotion && (
+                                <>
+                                    {error && (
+                                        <p
+                                            style={{
+                                                color: "red",
+                                                fontSize: "1.2rem",
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            {error}
+                                        </p>
+                                    )}
+                                    {!error && (
+                                        <div className="page-content">
+                                            <div className="records table-responsive">
+                                                <div className="record-header">
+                                                    <div className="browse">
+                                                        <input
+                                                            type="search"
+                                                            placeholder="Search"
+                                                            className="record-search"
+                                                            value={searchTerm}
+                                                            onChange={
+                                                                handleSearchChange
                                                             }
-                                                        >
-                                                            Email
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button
-                                className="btn_save_absence"
-                                onClick={handlePrint}
-                            >
-                                Imprimer
-                            </button>
-                        </div>
-                    )}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <table
+                                                    width="100%"
+                                                    id="my-table"
+                                                >
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Promotion</th>
+                                                            <th>Nom</th>
+                                                            <th>Prénom</th>
+                                                            <th>Email</th>
+                                                            <th>Téléphone</th>
+                                                            {/* <th>Groupe</th>
+                                    <th>Filière</th> */}
+                                                            <th>
+                                                                Total Absences
+                                                            </th>
+                                                            <th>
+                                                                Type Sanction
+                                                            </th>
+                                                            <th>
+                                                                Contacter
+                                                                stagiaire
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {stagiaires
+                                                            .filter(
+                                                                (stagiaire) =>
+                                                                    `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
+                                                                        .toLowerCase()
+                                                                        .includes(
+                                                                            searchTerm.toLowerCase()
+                                                                        )
+                                                            )
+                                                            .map(
+                                                                (
+                                                                    stagiaire,
+                                                                    index
+                                                                ) => (
+                                                                    <tr
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.promotion
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.nom
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.prenom
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.email
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.telephone
+                                                                            }
+                                                                        </td>
+                                                                        {/* <td>{stagiaire.numero_groupe}</td>
+                                            <td>{stagiaire.nom_filiere}</td> */}
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.total_absences
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            {
+                                                                                stagiaire.type_sanction
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            <button
+                                                                                className="btn_email"
+                                                                                onClick={() =>
+                                                                                    sendEmail(
+                                                                                        stagiaire.email,
+                                                                                        stagiaire
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Email
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <button
+                                                className="btn_save_absence"
+                                                onClick={handlePrint}
+                                            >
+                                                Imprimer
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                    </>
                 </main>
             </div>
         </>

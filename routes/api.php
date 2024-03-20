@@ -41,7 +41,7 @@ Route::get('/filieres', [SurveillanceController::class, 'getFiliere']);
 Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
 Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilter']);
 Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
-Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
+Route::get('/absences/existUpdate/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
 
 
    Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);
@@ -56,3 +56,12 @@ Route::get('/getStagiairesWithAbsencesAndSanctions', [SanctionController::class,
 
 
     Route::post('/send-email', [EmailController::class,'sendEmail']);
+
+
+    Route::get('/getStagiairesDashboard', [SurveillanceController::class, 'getStagiairesDashboard']);
+
+    Route::get('/generateReport', [SurveillanceController::class, 'generateReport']);
+
+
+    Route::get('/dashboard_statistique', [SurveillanceController::class, 'dashboard_statistique']);
+Route::get('/absences/exist/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistenceSaisir']);

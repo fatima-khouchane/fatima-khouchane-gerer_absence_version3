@@ -3,15 +3,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/styleLogin.css"; // Importation du fichier CSS
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importation des icônes
+import { MdVisibility, MdVisibilityOff } from "react-icons/md"; // Import Material Icons
 
 const Login = ({ updateRole }) => {
     const navigate = useNavigate();
+    const [visible, setVisible] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-    const [showPassword, setShowPassword] = useState(false); // State pour afficher/masquer le mot de passe
     const [validationErrors, setValidationErrors] = useState({});
 
     const handleChange = (e) => {
@@ -58,10 +58,10 @@ const Login = ({ updateRole }) => {
             }
         }
     };
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
 
+    const toggleVisibility = () => {
+        setVisible((prevVisible) => !prevVisible);
+    };
     return (
         <div className="body">
             <div className="login-container">
@@ -69,27 +69,40 @@ const Login = ({ updateRole }) => {
                     <h2>Gestion d'absence des stagiaires</h2>
                     <img src={OFPPT_Logo} alt="ista_logo" className="logo" />
                     <form method="POST" onSubmit={handleSubmit}>
+                        {validationErrors.email && (
+                            <div className="error-message">
+                                {validationErrors.email[0]}
+                            </div>
+                        )}
                         <input
                             type="text"
                             name="email"
                             placeholder="Enter Email"
                             onChange={handleChange}
                         />
-
+                        {validationErrors.password && (
+                            <div className="error-message">
+                                {validationErrors.password[0]}
+                            </div>
+                        )}
                         <div className="password-input-container">
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={visible ? "text" : "password"}
                                 name="password"
                                 placeholder="Enter Password"
                                 onChange={handleChange}
                             />
-                            <button
-                                type="button"
-                                onClick={togglePasswordVisibility}
-                                className="toggle-password"
+                            <div
+                                className="visibility-icon"
+                                onClick={toggleVisibility}
                             >
-                                {showPassword ? <FaEye /> : <FaEyeSlash />}
-                            </button>
+                                {visible ? (
+                                    <MdVisibility />
+                                ) : (
+                                    <MdVisibilityOff />
+                                )}
+                                {/* Use Material Icons for visibility toggle */}
+                            </div>
                         </div>
 
                         <button type="submit">log in </button>

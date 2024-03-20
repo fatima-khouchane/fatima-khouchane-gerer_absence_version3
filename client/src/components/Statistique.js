@@ -1,21 +1,74 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Statistique = () => {
     const navigate = useNavigate();
+    const [anneeScolaire, setAnneeScolaire] = useState("");
+    const [totalStagiaires, setTotalStagiaires] = useState(0);
+    const [totalFilieres, setTotalFilieres] = useState(0);
+    const [totalExclusions, setTotalExclusions] = useState(0);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        // Récupérer la date actuelle
+        const dateActuelle = new Date();
+        const annee = dateActuelle.getFullYear();
+        const anneeScolaireDefaut = `${annee}`;
+
+        // Mettre à jour l'état avec l'année scolaire par défaut
+        setAnneeScolaire(anneeScolaireDefaut);
+    }, []);
+
     useEffect(() => {
         const fetchUserDetails = async () => {
-            // try {
             const token = localStorage.getItem("token");
             if (!token) {
                 navigate("/");
-                return;
             }
         };
         fetchUserDetails();
-    }, []);
+    }, [navigate]);
+
+    const handleAnneeScolaireChange = (e) => {
+        setAnneeScolaire(e.target.value);
+    };
+
+    useEffect(() => {
+        const fetchStagiaires = async () => {
+            if (anneeScolaire === "") {
+                return;
+            }
+
+            try {
+                const response = await axios.get(
+                    `http://localhost:8000/api/dashboard_statistique`,
+                    {
+                        params: { promotion: anneeScolaire },
+                    }
+                );
+                if (response.status === 200) {
+                    const { totalStagiaires, totalFilieres, totalExclusions } =
+                        response.data;
+                    setTotalStagiaires(totalStagiaires);
+                    setTotalFilieres(totalFilieres);
+                    setTotalExclusions(totalExclusions);
+                    setError("");
+                } else {
+                    throw new Error("Failed to fetch data");
+                }
+            } catch (error) {
+                setError(
+                    "Aucune donnée disponible pour l'année scolaire spécifiée."
+                );
+            }
+        };
+
+        fetchStagiaires();
+    }, [anneeScolaire]);
+console.log(totalExclusions, totalFilieres, totalStagiaires);
     return (
         <>
             <input type="checkbox" id="menu-toggle" />
@@ -57,7 +110,7 @@ const Statistique = () => {
             <div className="main-content">
                 <header>
                     <div className="header-content">
-                        <label for="menu-toggle">
+                        <label htmlFor="menu-toggle">
                             <span className="las la-bars"></span>
                         </label>
 
@@ -86,54 +139,65 @@ const Statistique = () => {
                     <div className="page-header">
                         <h1>Statistique</h1>
                         {/* <!-- <small>Home / Dashboard</small> --> */}
+                        <div className="browse">
+                            <input
+                                type="search"
+                                placeholder="Année scolaire"
+                                className="record-search"
+                                value={anneeScolaire}
+                                onChange={handleAnneeScolaireChange}
+                            />
+                        </div>
                     </div>
 
                     <div className="page-content">
-                        <div className="analytics">
-                            <div className="card">
-                                <div className="card-head">
-                                    <h2>107,200</h2>
-                                    <span className="las la-user-friends"></span>
+                        {error && (
+                            <p
+                                style={{
+                                    color: "red",
+                                    fontSize: "1.2rem",
+                                    textAlign: "center",
+                                }}
+                            >
+                                {error}
+                            </p>
+                        )}
+                        {!error && (
+                            <div className="analytics">
+                                <div className="card">
+                                    <div className="card-head">
+                                        <h2>{totalStagiaires}</h2>
+                                        <span className="las la-user-friends"></span>
+                                    </div>
+                                    <div className="card-progress">
+                                        <small>somme des stagiaires</small>
+                                    </div>
                                 </div>
-                                <div className="card-progress">
-                                    <small>somme des stagiaires</small>
-                                </div>
-                            </div>
 
-                            <div className="card">
-                                <div className="card-head">
-                                    <h2>340,230</h2>
-                                    <span className="las la-eye"></span>
+                                <div className="card">
+                                    <div className="card-head">
+                                        <h2>{totalFilieres}</h2>
+                                        <span className="las la-eye"></span>
+                                    </div>
+                                    <div className="card-progress">
+                                        <small>somme des filières</small>
+                                    </div>
                                 </div>
-                                <div className="card-progress">
-                                    <small>somme des filieres</small>
-                                </div>
-                            </div>
 
-                            <div className="card">
-                                <div className="card-head">
-                                    <h2>653,200</h2>
-                                    <span className="las la-shopping-cart"></span>
-                                </div>
-                                <div className="card-progress">
-                                    <small>
-                                        somme des stagiaire exlusion définitive
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div className="card">
-                                <div className="card-head">
-                                    <h2>47,500</h2>
-                                    <span className="las la-envelope"></span>
-                                </div>
-                                <div className="card-progress">
-                                    <small>
-                                        somme des stagiaire qui'on pas d'absence
-                                    </small>
+                                <div className="card">
+                                    <div className="card-head">
+                                        <h2>{totalExclusions}</h2>
+                                        <span className="las la-shopping-cart"></span>
+                                    </div>
+                                    <div className="card-progress">
+                                        <small>
+                                            somme des stagiaires exclus
+                                            définitivement
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="records table-responsive">
                             <div className="record-header"></div>

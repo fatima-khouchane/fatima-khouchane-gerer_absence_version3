@@ -12,6 +12,19 @@ const Directeur = () => {
     const [dataLoaded, setDataLoaded] = useState(false);
     const [date_debut, setdate_debut] = useState("");
     const [date_fin, setdate_fin] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+
+    useEffect(() => {
+        const dateActuelle = new Date();
+
+        const annee = dateActuelle.getFullYear();
+
+        const anneeScolaireDefaut = `${annee}`;
+        // const anneeScolaireDefaut = `${annee - 1}-${annee}`;
+
+        // Mettre à jour l'état avec l'année scolaire par défaut
+        setAnneeScolaire(anneeScolaireDefaut);
+    }, []);
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -152,7 +165,12 @@ const Directeur = () => {
                                         type="search"
                                         placeholder="Search"
                                         className="record-search"
+                                        value={searchTerm}
+                                        onChange={(e) =>
+                                            setSearchTerm(e.target.value)
+                                        }
                                     />
+
                                     <input
                                         type="search"
                                         placeholder="Année scolaire"
@@ -179,41 +197,54 @@ const Directeur = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {stagiaires.map((stagiaire) => (
-                                                    <tr key={stagiaire.id}>
-                                                        <td>{stagiaire.nom}</td>
-                                                        <td>
-                                                            {stagiaire.prenom}
-                                                        </td>
-                                                        <td>
-                                                            {
-                                                                stagiaire.date_naissance
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            {
-                                                                stagiaire.total_absences
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            {
-                                                                stagiaire.total_absences
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                id="btn-raport"
-                                                                onClick={() =>
-                                                                    generateReport(
-                                                                        stagiaire.id
-                                                                    )
+                                                {stagiaires
+                                                    .filter((stagiaire) =>
+                                                        `${stagiaire.type_sanction} ${stagiaire.nom} ${stagiaire.prenom}`
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                searchTerm.toLowerCase()
+                                                            )
+                                                    )
+                                                    .map((stagiaire, index) => (
+                                                        <tr key={stagiaire.id}>
+                                                            <td>
+                                                                {stagiaire.nom}
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    stagiaire.prenom
                                                                 }
-                                                            >
-                                                                Générer rapport
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    stagiaire.date_naissance
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    stagiaire.total_absences
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    stagiaire.type_sanction
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <button
+                                                                    id="btn-raport"
+                                                                    onClick={() =>
+                                                                        generateReport(
+                                                                            stagiaire.id
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Générer
+                                                                    rapport
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
                                             </tbody>
                                         </table>
                                     </div>

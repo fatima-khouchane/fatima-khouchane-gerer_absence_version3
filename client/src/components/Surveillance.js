@@ -16,7 +16,8 @@ const Surveillance = () => {
     const [selectedDate, setSelectedDate] = useState("");
     const [nbr_absence, setNbr_absence] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [absencesExist, setAbsencesExist] = useState(false);
+    const [message, setMessage] = useState("");
+    const [messageShow, setMessageShow] = useState("");
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -82,7 +83,7 @@ const Surveillance = () => {
         updatedNbrAbsence[index] = value;
         setNbr_absence(updatedNbrAbsence);
     };
-
+    // console.log(stagiaires)
     const saveAbsence = async () => {
         try {
             const validStagiaires = stagiaires.every(
@@ -166,9 +167,15 @@ const Surveillance = () => {
                 const response = await axios.get(
                     `http://localhost:8000/api/absences/exist/${selectedFiliere}/${selectedGroupe}/${selectedDate}`
                 );
-                setAbsencesExist(response.data.exist);
+                if (response.data.message === "Absence deja saisir.") {
+                    setMessage(response.data.message);
+                    setMessageShow("");
+                } else {
+                    setMessage("");
+                    setMessageShow(response.data.message);
+                }
             } catch (error) {
-                console.error("Error checking absences existence:", error);
+                console.error("Error:", error);
             }
         };
 
@@ -176,7 +183,7 @@ const Surveillance = () => {
             checkAbsencesExistence();
         }
     }, [selectedFiliere, selectedGroupe, selectedDate]);
-
+    // console.log(absencesExist);
     return (
         <div className="allContainer">
             <input type="checkbox" id="menu-toggle" />
@@ -295,24 +302,13 @@ const Surveillance = () => {
                     </div>
 
                     <div className="page-content">
-                        {selectedFiliere &&
-                            selectedGroupe &&
-                            selectedDate &&
-                            (absencesExist ? (
-                                <p
-                                    style={{
-                                        textAlign: "center",
-                                        color: "red",
-                                    }}
-                                >
-                                    Absences de ce groupe et cette filière déjà
-                                    saisies pour cette date.
-                                </p>
-                            ) : (
-                                <React.Fragment>
-                                    <div className="records table-responsive">
-                                        <div className="record-header">
-                                            <div className="browse">
+                        <React.Fragment>
+                            <div className="records table-responsive">
+                                <div className="record-header">
+                                    <div className="browse">
+                                        {message &&
+                                            message ===
+                                                "Absence pas encore saisir." && (
                                                 <input
                                                     type="search"
                                                     placeholder="Search"
@@ -324,160 +320,158 @@ const Surveillance = () => {
                                                         )
                                                     }
                                                 />
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <table width="100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th>
-                                                            <span>CIN</span>
-                                                        </th>
-                                                        <th>
-                                                            <span>Nom</span>
-                                                        </th>
-                                                        <th>
-                                                            <span>Prénom</span>
-                                                        </th>
-
-                                                        <th>
-                                                            <span>
-                                                                Date Absence
-                                                            </span>
-                                                        </th>
-                                                        <th>
-                                                            <span>Status</span>
-                                                        </th>
-                                                        <th>
-                                                            <span>
-                                                                Nombre
-                                                                d'absence/heure
-                                                            </span>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {stagiaires
-                                                        .filter((stagiaire) =>
-                                                            `${stagiaire.cin} ${stagiaire.nom} ${stagiaire.prenom}`
-                                                                .toLowerCase()
-                                                                .includes(
-                                                                    searchTerm.toLowerCase()
-                                                                )
-                                                        )
-                                                        .map(
-                                                            (
-                                                                stagiaire,
-                                                                index
-                                                            ) => (
-                                                                <tr
-                                                                    key={
-                                                                        stagiaire.id
-                                                                    }
-                                                                >
-                                                                    <td>
-                                                                        {
-                                                                            stagiaire.cin
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        {
-                                                                            stagiaire.nom
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        {
-                                                                            stagiaire.prenom
-                                                                        }
-                                                                    </td>
-
-                                                                    <td>
-                                                                        {
-                                                                            selectedDate
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        <select
-                                                                            value={
-                                                                                statusValues[
-                                                                                    index
-                                                                                ]
-                                                                            }
-                                                                            onChange={(
-                                                                                e
-                                                                            ) => {
-                                                                                const newStatusValues =
-                                                                                    [
-                                                                                        ...statusValues,
-                                                                                    ];
-                                                                                newStatusValues[
-                                                                                    index
-                                                                                ] =
-                                                                                    e.target.value;
-                                                                                setStatusValues(
-                                                                                    newStatusValues
-                                                                                );
-                                                                            }}
-                                                                            className="status_select"
-                                                                        >
-                                                                            <option value="Présent">
-                                                                                Présent
-                                                                            </option>
-                                                                            <option value="Absence">
-                                                                                Absence
-                                                                            </option>
-                                                                            <option value="Absence justifiée">
-                                                                                Absence
-                                                                                justifiée
-                                                                            </option>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td
-                                                                        style={{
-                                                                            textAlign:
-                                                                                "center",
-                                                                        }}
-                                                                    >
-                                                                        <input
-                                                                            type="number"
-                                                                            value={
-                                                                                nbr_absence[
-                                                                                    index
-                                                                                ]
-                                                                            }
-                                                                            onChange={(
-                                                                                e
-                                                                            ) =>
-                                                                                handleNbrAbsenceChange(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value,
-                                                                                    index
-                                                                                )
-                                                                            }
-                                                                            className="nbr_absence"
-                                                                        />
-                                                                    </td>
-                                                                </tr>
-                                                            )
-                                                        )}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                            )}
                                     </div>
-                                    {selectedFiliere &&
-                                        selectedGroupe &&
-                                        selectedDate && (
-                                            <button
-                                                className="btn_save_absence"
-                                                onClick={saveAbsence}
-                                            >
-                                                Enregistrer absence
-                                            </button>
-                                        )}
-                                </React.Fragment>
-                            ))}
+                                </div>
+                                {message && (
+                                    <p
+                                        style={{
+                                            color: "red",
+                                            textAlign: "center",
+                                            fontSize: "1.6rem",
+                                            marginBottom: "30px",
+                                        }}
+                                    >
+                                        Absence de ce groupe et filiere et déja
+                                        saisir dans cette date.
+                                    </p>
+                                )}
+                                {messageShow && (
+                                    <div>
+                                        <table width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <span>CIN</span>
+                                                    </th>
+                                                    <th>
+                                                        <span>Nom</span>
+                                                    </th>
+                                                    <th>
+                                                        <span>Prénom</span>
+                                                    </th>
+
+                                                    <th>
+                                                        <span>
+                                                            Date Absence
+                                                        </span>
+                                                    </th>
+                                                    <th>
+                                                        <span>Status</span>
+                                                    </th>
+                                                    <th>
+                                                        <span>
+                                                            Nombre
+                                                            d'absence/heure
+                                                        </span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stagiaires
+                                                    .filter((stagiaire) =>
+                                                        `${stagiaire.cin} ${stagiaire.nom} ${stagiaire.prenom}`
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                searchTerm.toLowerCase()
+                                                            )
+                                                    )
+                                                    .map((stagiaire, index) => (
+                                                        <tr key={stagiaire.id}>
+                                                            <td>
+                                                                {stagiaire.cin}
+                                                            </td>
+                                                            <td>
+                                                                {stagiaire.nom}
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    stagiaire.prenom
+                                                                }
+                                                            </td>
+
+                                                            <td>
+                                                                {selectedDate}
+                                                            </td>
+                                                            <td>
+                                                                <select
+                                                                    value={
+                                                                        statusValues[
+                                                                            index
+                                                                        ]
+                                                                    }
+                                                                    onChange={(
+                                                                        e
+                                                                    ) => {
+                                                                        const newStatusValues =
+                                                                            [
+                                                                                ...statusValues,
+                                                                            ];
+                                                                        newStatusValues[
+                                                                            index
+                                                                        ] =
+                                                                            e.target.value;
+                                                                        setStatusValues(
+                                                                            newStatusValues
+                                                                        );
+                                                                    }}
+                                                                    className="status_select"
+                                                                >
+                                                                    <option value="Présent">
+                                                                        Présent
+                                                                    </option>
+                                                                    <option value="Absence">
+                                                                        Absence
+                                                                    </option>
+                                                                    <option value="Absence justifiée">
+                                                                        Absence
+                                                                        justifiée
+                                                                    </option>
+                                                                </select>
+                                                            </td>
+                                                            <td
+                                                                style={{
+                                                                    textAlign:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                <input
+                                                                    type="number"
+                                                                    value={
+                                                                        nbr_absence[
+                                                                            index
+                                                                        ]
+                                                                    }
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleNbrAbsenceChange(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                    className="nbr_absence"
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
+                            {messageShow && (
+                                <button
+                                    className="btn_save_absence"
+                                    onClick={saveAbsence}
+                                >
+                                    Enregistrer absence
+                                </button>
+                            )}
+                        </React.Fragment>
                     </div>
                 </main>
             </div>

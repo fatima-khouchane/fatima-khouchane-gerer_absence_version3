@@ -65,9 +65,11 @@ h3 {
     font-size: 16px;
     cursor: pointer;
 }
+
 .login-container form button:hover {
     background-color: #0056b3;
 }
+
 img {
     width: 90px;
     height: auto;
@@ -83,13 +85,39 @@ img {
 .password-input-container input {
     padding-right: 30px; /* Adjust as needed */
 }
+/*  */
 
-.toggle-password {
+.password-input-container {
+    position: relative;
+}
+
+.password-input-container input {
+    padding-right: 40px; /* Ajoutez un padding à droite pour laisser de la place à l'icône */
+}
+
+.visibility-icon {
     position: absolute;
-    top: 35%;
-    right: 1px; /* Adjust as needed */
-    transform: translateY(-50%);
-    background: none;
-    border: none;
+    top: 50%;
+    right: 10px;
+    /* Ajustez la position de l'icône */
+    transform: translateY(-75%);
     cursor: pointer;
+}
+
+/* Ajoutez des styles pour l'icône */
+.visibility-icon svg {
+    width: 20px;
+    height: auto;
+    fill: #666; /* Couleur de l'icône */
+}
+
+/* Ajoutez des styles pour l'icône au survol */
+.visibility-icon:hover svg {
+    fill: #333; /* Couleur de l'icône au survol */
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
 }
