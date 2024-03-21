@@ -51,12 +51,11 @@ const Raport = () => {
         const doc = new jsPDF();
         const imgData = OFPPT_Logo;
         doc.addImage(imgData, "PNG", 14, 14, 18, 20);
-        doc.setFontSize(12); // Définit la taille de la police à 12 points
+        doc.setFontSize(12); 
 
         doc.text("Office de la formation professionnelle", 60, 20);
         doc.text("et de la promotion du travail", 60, 26);
 
-        // Ajouter les informations du résumé en haut de la page
         if (absences.length > 0) {
             doc.text(`Année scolaire : ${absences[0].promotion}`, 14, 50);
             doc.text(
@@ -77,7 +76,7 @@ const Raport = () => {
         doc.autoTable({
             head: [["Date d'absence", "Statut", "Nombre d'heures d'absence"]],
             body: tableData,
-            startY: 90, // Commencer la table après les informations du résumé
+            startY: 90,
         });
 
         doc.save(`raport_absence_ ${absences[0].nom} ${absences[0].prenom}.pdf`);

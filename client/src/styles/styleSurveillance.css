@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600&display=swap");
 
 :root {
-    --main-color: #22baa0;
+    --main-color: #efefef;
     --color-dark: #34425a;
     --text-grey: #b0b0b0;
 }
@@ -127,7 +127,7 @@ side-head span {
     padding: 1.2rem 0rem;
 }
 
-.side-menu a.active {
+.side-menu Link.active {
     background: #2b384e;
 }
 

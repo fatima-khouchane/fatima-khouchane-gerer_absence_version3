@@ -20,9 +20,7 @@ const Directeur = () => {
         const annee = dateActuelle.getFullYear();
 
         const anneeScolaireDefaut = `${annee}`;
-        // const anneeScolaireDefaut = `${annee - 1}-${annee}`;
 
-        // Mettre à jour l'état avec l'année scolaire par défaut
         setAnneeScolaire(anneeScolaireDefaut);
     }, []);
 
@@ -72,12 +70,11 @@ const Directeur = () => {
             showCancelButton: true,
             confirmButtonText: "Create rapport",
             denyButtonText: `Cancel`,
-            allowOutsideClick: false, // Empêche la fermeture lorsque l'utilisateur clique en dehors du pop-up
+            allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
                 const date_debut = document.getElementById("Date_début").value;
                 const date_fin = document.getElementById("Date_fin").value;
-                // Rediriger vers un autre composant après la création du rapport
                 navigate(`/rapport/${id_stagiaire}/${date_debut}/${date_fin}`);
             }
         });
@@ -188,7 +185,8 @@ const Directeur = () => {
                                                 <tr>
                                                     <th>Nom</th>
                                                     <th>Prénom</th>
-                                                    <th>Date naissance</th>
+                                                    <th>Filiere</th>
+                                                    <th>Groupe</th>
                                                     <th>
                                                         Somme d'absence/heure
                                                     </th>
@@ -207,7 +205,11 @@ const Directeur = () => {
                                                     )
                                                     .map((stagiaire, index) => (
                                                         <tr key={stagiaire.id}>
-                                                            <td>
+                                                            <td
+                                                                style={{
+                                                                    color: "#22baa0",
+                                                                }}
+                                                            >
                                                                 {stagiaire.nom}
                                                             </td>
                                                             <td>
@@ -217,10 +219,20 @@ const Directeur = () => {
                                                             </td>
                                                             <td>
                                                                 {
-                                                                    stagiaire.date_naissance
+                                                                    stagiaire.nom_filiere
                                                                 }
                                                             </td>
                                                             <td>
+                                                                {
+                                                                    stagiaire.numero_groupe
+                                                                }
+                                                            </td>
+                                                            <td
+                                                                style={{
+                                                                    textAlign:
+                                                                        "center",
+                                                                }}
+                                                            >
                                                                 {
                                                                     stagiaire.total_absences
                                                                 }

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../styles/styleLogin.css"; // Importation du fichier CSS
+import "../styles/styleLogin.css"; 
 import OFPPT_Logo from "../images/OFPPT_Logo.png";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md"; // Import Material Icons
+import { MdVisibility, MdVisibilityOff } from "react-icons/md"; 
 
 const Login = ({ updateRole }) => {
     const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Login = ({ updateRole }) => {
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify({ role: role }));
 
-            updateRole(role); // Mise à jour du rôle dans App.js
+            updateRole(role); 
 
             if (role === "Directeur") {
                 navigate("/directeur");
@@ -101,7 +101,6 @@ const Login = ({ updateRole }) => {
                                 ) : (
                                     <MdVisibilityOff />
                                 )}
-                                {/* Use Material Icons for visibility toggle */}
                             </div>
                         </div>
 

@@ -103,7 +103,6 @@ const Modifier_absence = () => {
 
     useEffect(() => {
         if (absencesExist && absencesData.length > 0) {
-            // Remplir les valeurs existantes de nombre d'absences par heure
             const initialNbrAbsences = stagiaires.map((stagiaire) => {
                 const absence = absencesData.find(
                     (a) => a.id_stagiaire === stagiaire.id
@@ -112,7 +111,6 @@ const Modifier_absence = () => {
             });
             setNbr_absence(initialNbrAbsences);
 
-            // Remplir les valeurs existantes de statut
             const initialStatusValues = stagiaires.map((stagiaire) => {
                 const absence = absencesData.find(
                     (a) => a.id_stagiaire === stagiaire.id
@@ -131,12 +129,10 @@ const Modifier_absence = () => {
 
     const saveAbsence = async () => {
         try {
-            // Vérifier si des absences existent déjà pour la date sélectionnée
             if (absencesExist) {
-                // Absences existent, procéder à la mise à jour
                 const updatedAbsencesData = stagiaires.map(
                     (stagiaire, index) => ({
-                        id: absencesData[index].id, // L'ID de l'absence existante
+                        id: absencesData[index].id,
                         status: statusValues[index],
                         nombre_absence_heure: parseInt(nbr_absence[index]),
                         date_absence: selectedDate,
@@ -167,8 +163,7 @@ const Modifier_absence = () => {
                     },
                 });
             } else {
-                // Absences n'existent pas, procéder à la création
-                // ... Code pour créer les nouvelles absences
+                //
             }
         } catch (error) {
             console.error("Error saving absences:", error);
@@ -299,14 +294,13 @@ const Modifier_absence = () => {
                             </label>
                         </div>
                     </div>
-
-                    <div className="page-content">
-                        {selectedFiliere && selectedGroupe && selectedDate && (
+                    {selectedFiliere && selectedGroupe && selectedDate && (
+                        <div className="page-content">
                             <React.Fragment>
-                                <div className="records table-responsive">
-                                    <div className="record-header">
-                                        <div className="browse">
-                                            {absencesExistTrue && (
+                                {absencesExistTrue && (
+                                    <div className="records table-responsive">
+                                        <div className="record-header">
+                                            <div className="browse">
                                                 <input
                                                     type="search"
                                                     placeholder="Search"
@@ -318,24 +312,9 @@ const Modifier_absence = () => {
                                                         )
                                                     }
                                                 />
-                                            )}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <>
-                                        {absencesExistFalse && (
-                                            <p
-                                                style={{
-                                                    color: "red",
-                                                    textAlign: "center",
-                                                    fontSize: "1.6rem",
-                                                    marginBottom: "30px",
-                                                }}
-                                            >
-                                                Absence de ce group et filiere est pas encore saisir dans
-                                                cette date.
-                                            </p>
-                                        )}
-                                        {absencesExistTrue && (
+                                        <>
                                             <div>
                                                 <table width="100%">
                                                     <thead>
@@ -351,7 +330,6 @@ const Modifier_absence = () => {
                                                                     Prénom
                                                                 </span>
                                                             </th>
-
                                                             <th>
                                                                 <span>
                                                                     Date Absence
@@ -390,7 +368,11 @@ const Modifier_absence = () => {
                                                                             stagiaire.id
                                                                         }
                                                                     >
-                                                                        <td>
+                                                                        <td
+                                                                            style={{
+                                                                                color: "#22baa0",
+                                                                            }}
+                                                                        >
                                                                             {
                                                                                 stagiaire.cin
                                                                             }
@@ -405,7 +387,6 @@ const Modifier_absence = () => {
                                                                                 stagiaire.prenom
                                                                             }
                                                                         </td>
-
                                                                         <td>
                                                                             {
                                                                                 selectedDate
@@ -459,7 +440,7 @@ const Modifier_absence = () => {
                                                                                         index
                                                                                     ] ||
                                                                                     0
-                                                                                } // Assurez-vous que la valeur initiale est définie correctement
+                                                                                }
                                                                                 onChange={(
                                                                                     e
                                                                                 ) =>
@@ -472,7 +453,6 @@ const Modifier_absence = () => {
                                                                                 }
                                                                             />
                                                                         </td>
-
                                                                         <td>
                                                                             <input
                                                                                 type="hidden"
@@ -491,9 +471,9 @@ const Modifier_absence = () => {
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        )}{" "}
-                                    </>
-                                </div>
+                                        </>
+                                    </div>
+                                )}
                                 {absencesExistTrue && (
                                     <button
                                         className="btn_save_absence"
@@ -503,8 +483,13 @@ const Modifier_absence = () => {
                                     </button>
                                 )}
                             </React.Fragment>
-                        )}
-                    </div>
+                        </div>
+                    )}
+                    {absencesExistFalse && (
+                        <p style={{ color: "red", textAlign: "center" }}>
+                            Absence pas encore saisir
+                        </p>
+                    )}
                 </main>
             </div>
         </div>

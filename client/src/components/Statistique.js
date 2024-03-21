@@ -4,6 +4,7 @@ import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
 const Statistique = () => {
     const navigate = useNavigate();
     const [anneeScolaire, setAnneeScolaire] = useState("");
@@ -13,12 +14,10 @@ const Statistique = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // Récupérer la date actuelle
         const dateActuelle = new Date();
         const annee = dateActuelle.getFullYear();
         const anneeScolaireDefaut = `${annee}`;
 
-        // Mettre à jour l'état avec l'année scolaire par défaut
         setAnneeScolaire(anneeScolaireDefaut);
     }, []);
 
@@ -68,7 +67,7 @@ const Statistique = () => {
 
         fetchStagiaires();
     }, [anneeScolaire]);
-console.log(totalExclusions, totalFilieres, totalStagiaires);
+    console.log(totalExclusions, totalFilieres, totalStagiaires);
     return (
         <>
             <input type="checkbox" id="menu-toggle" />
@@ -177,7 +176,7 @@ console.log(totalExclusions, totalFilieres, totalStagiaires);
                                 <div className="card">
                                     <div className="card-head">
                                         <h2>{totalFilieres}</h2>
-                                        <span className="las la-eye"></span>
+                                        <span className="las la-user-friends"></span>
                                     </div>
                                     <div className="card-progress">
                                         <small>somme des filières</small>
@@ -187,7 +186,7 @@ console.log(totalExclusions, totalFilieres, totalStagiaires);
                                 <div className="card">
                                     <div className="card-head">
                                         <h2>{totalExclusions}</h2>
-                                        <span className="las la-shopping-cart"></span>
+                                        <span className="las la-user-friends"></span>
                                     </div>
                                     <div className="card-progress">
                                         <small>

@@ -59,7 +59,7 @@ const Suivi_absence = () => {
                     <textarea ref={contentRef} placeholder="Content" required />
                 </form>
             ),
-            allowOutsideClick: false, // Empêche la fermeture lorsque l'utilisateur clique en dehors du pop-up
+            allowOutsideClick: false, 
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = {
@@ -69,7 +69,6 @@ const Suivi_absence = () => {
                 };
                 send(formData);
             } else if (result.dismiss === MySwal.DismissReason.cancel) {
-                // Ne rien faire ici, la popup restera ouverte
             }
         });
     };
@@ -177,8 +176,7 @@ const Suivi_absence = () => {
 
         const imgData = OFPPT_Logo;
         doc.addImage(imgData, "PNG", 14, 14, 18, 20);
-        doc.setFontSize(12); // Définit la taille de la police à 12 points
-
+        doc.setFontSize(12); 
         doc.text("Office de la formation professionnelle", 60, 20);
         doc.text("et de la promotion du travail", 60, 26);
 
@@ -227,6 +225,8 @@ const Suivi_absence = () => {
 
         doc.save("tableau.pdf");
     };
+
+   
 
     return (
         <>
@@ -340,7 +340,7 @@ const Suivi_absence = () => {
                                     onChange={(e) =>
                                         setSelectedPromotion(e.target.value)
                                     }
-                                    placeholder="Entrer la promotion"
+                                    placeholder="Années scolaire YYYY"
                                 />
                             </label>
                         </div>
@@ -388,8 +388,7 @@ const Suivi_absence = () => {
                                                             <th>Prénom</th>
                                                             <th>Email</th>
                                                             <th>Téléphone</th>
-                                                            {/* <th>Groupe</th>
-                                    <th>Filière</th> */}
+                                                           
                                                             <th>
                                                                 Total Absences
                                                             </th>
@@ -422,7 +421,11 @@ const Suivi_absence = () => {
                                                                             index
                                                                         }
                                                                     >
-                                                                        <td>
+                                                                        <td
+                                                                            style={{
+                                                                                color: "#22baa0",
+                                                                            }}
+                                                                        >
                                                                             {
                                                                                 stagiaire.promotion
                                                                             }
@@ -447,8 +450,7 @@ const Suivi_absence = () => {
                                                                                 stagiaire.telephone
                                                                             }
                                                                         </td>
-                                                                        {/* <td>{stagiaire.numero_groupe}</td>
-                                            <td>{stagiaire.nom_filiere}</td> */}
+                                                                      
                                                                         <td>
                                                                             {
                                                                                 stagiaire.total_absences

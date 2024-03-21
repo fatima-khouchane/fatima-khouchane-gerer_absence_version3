@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../styles/styleNotFound.css"; // Importation du fichier CSS
+import "../styles/styleNotFound.css";
 import notFound from "../images/notFound.png";
 
 const NotFound = () => {

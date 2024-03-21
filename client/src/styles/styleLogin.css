@@ -1,3 +1,5 @@
+/* style de login */
+
 .body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -26,8 +28,7 @@
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    /* width: 300px; */
-    /* margin-bottom: 10px; */
+   
     width: 400px;
 }
 .logo {
@@ -83,16 +84,15 @@ img {
 }
 
 .password-input-container input {
-    padding-right: 30px; /* Adjust as needed */
+    padding-right: 30px; 
 }
-/*  */
 
 .password-input-container {
     position: relative;
 }
 
 .password-input-container input {
-    padding-right: 40px; /* Ajoutez un padding à droite pour laisser de la place à l'icône */
+    padding-right: 40px;
 }
 
 .visibility-icon {
@@ -104,16 +104,14 @@ img {
     cursor: pointer;
 }
 
-/* Ajoutez des styles pour l'icône */
 .visibility-icon svg {
     width: 20px;
     height: auto;
-    fill: #666; /* Couleur de l'icône */
+    fill: #666; 
 }
 
-/* Ajoutez des styles pour l'icône au survol */
 .visibility-icon:hover svg {
-    fill: #333; /* Couleur de l'icône au survol */
+    fill: #333; 
 }
 
 .error-message {

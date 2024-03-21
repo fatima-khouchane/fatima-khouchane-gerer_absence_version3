@@ -36,10 +36,8 @@ class AuthController extends Controller
         ], 401);
     }
 
-    // L'utilisateur est authentifié, récupérez-le de la base de données
     $user = Auth::user();
 
-    // Vérifiez le rôle de l'utilisateur
     if ($user->role !== 'Directeur' && $user->role !== 'Surveillance') {
         return response()->json([
             'status' => 'error',
@@ -47,7 +45,6 @@ class AuthController extends Controller
         ], 403);
     }
 
-    // Générer le token JWT
     $token = Auth::attempt($credentials);
 
     return response()->json([

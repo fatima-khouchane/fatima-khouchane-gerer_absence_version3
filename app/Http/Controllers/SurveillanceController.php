@@ -177,17 +177,14 @@ public function getStagiairesDashboard(Request $request)
 
     public function generateReport(Request $request)
     {
-        // Récupérer les données de la requête
         $stagiaireId = $request->input('id_stagiaire');
         $startDate = $request->input('date_debut');
         $endDate = $request->input('date_fin');
 
-        // Vérifier que les paramètres nécessaires sont fournis
         if (!$stagiaireId || !$startDate || !$endDate) {
             return response()->json(['error' => 'Veuillez fournir tous les paramètres nécessaires.'], 400);
         }else{
 
-        // Récupérer les absences du stagiaire entre les dates fournies
        $absences = Absence::where('id_stagiaire', $stagiaireId)
                        ->whereBetween('date_absence', [$startDate, $endDate])
                        ->join('stagiaires', 'absences.id_stagiaire', '=', 'stagiaires.id')
@@ -196,7 +193,6 @@ public function getStagiairesDashboard(Request $request)
                        ->select('stagiaires.nom', 'stagiaires.prenom', 'groupes.numero_groupe as groupe', 'filieres.nom_filiere as filiere', 'absences.status', 'absences.nombre_absence_heure','absences.date_absence','stagiaires.promotion')
                        ->get();
 
-        // Retourner les absences
         return response()->json(['absences' => $absences], 200);}
     }
 
@@ -218,24 +214,19 @@ public function checkAbsencesExistenceSaisir($filiere, $groupe, $date)
 
         public function dashboard_statistique(Request $request)
 {
-    // Récupérer la promotion depuis la requête
     $promotion = $request->input('promotion');
 
-    // Vérifier si des stagiaires existent pour cette année scolaire
     $totalStagiaires = DB::table('stagiaires')
         ->where('promotion', $promotion)
         ->count();
 
-    // Si aucun stagiaire n'est trouvé, retourner un message d'erreur
     if ($totalStagiaires === 0) {
         return response()->json([
             'error' => 'Aucun stagiaire trouvé pour l\'année scolaire spécifiée.'
         ], 404);
     }
 
-    // Si des stagiaires existent, continuer le traitement pour obtenir les statistiques
-
-    // Nombre total de filières pour la promotion donnée
+   
     $totalFilieres = DB::table('stagiaires')
         ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id')
         ->where('stagiaires.promotion', $promotion)
@@ -243,14 +234,12 @@ public function checkAbsencesExistenceSaisir($filiere, $groupe, $date)
         ->distinct()
         ->count();
 
-    // Nombre total de stagiaires exclus définitivement pour la promotion donnée
     $totalExclusions = DB::table('stagiaires')
         ->join('vue_sanctions', 'stagiaires.id', '=', 'vue_sanctions.id_stagiaire')
         ->where('stagiaires.promotion', $promotion)
         ->where('vue_sanctions.type_sanction', 'exclusion définitive')
         ->count();
 
-    // Retourner les données au format JSON
     return response()->json([
         'totalStagiaires' => $totalStagiaires,
         'totalFilieres' => $totalFilieres,

@@ -11,19 +11,7 @@ use Illuminate\Support\Facades\DB;
 class SanctionController extends Controller
 {
         
-// use App\Models\Sanction;
 
-
-
-
-
-        // public function getStagiairesWithAbsencesAndSanctions()
-        //     {
-        //         $stagiaires = DB::table('view_stagiaires_with_absences_and_sanctions')->get();
-
-        //         return response()->json(['stagiaires' => $stagiaires]);
-        //     }
-    
    public function showSanction()
     {
        $sanctions = DB::table('vue_sanctions')->get();
