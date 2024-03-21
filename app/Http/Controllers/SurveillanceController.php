@@ -32,6 +32,13 @@ class SurveillanceController extends Controller
     return response()->json($stagiaires);
 }
 
+public function getStagiaireByFilterUpdate($filiere, $groupe){
+    $stagiaires = Stagiaire::where('id_groupe', $groupe)
+                           ->where('id_filiere', $filiere)
+                        //    ->where('promotion', $promotion)
+                           ->get();
+    return response()->json($stagiaires);
+}
 
     public function saveAbsence(Request $request)
 {
@@ -59,13 +66,11 @@ class SurveillanceController extends Controller
     }
 }
 
-public function checkAbsencesExistence($filiere, $groupe, $date,$promotion)
+public function checkAbsencesExistence($filiere, $groupe, $date)
 {
-    $absencesData = Absence::join('stagiaires', 'absences.id_stagiaire', '=', 'stagiaires.id')
-        ->where('stagiaires.id_filiere', $filiere)
-        ->where('stagiaires.id_groupe', $groupe)
-        ->whereDate('absences.date_absence', $date)
-        ->where('stagiaires.promotion', $promotion)
+    $absencesData = Absence::where('id_filiere', $filiere)
+        ->where('id_groupe', $groupe)
+        ->whereDate('date_absence', $date)
         ->get();
 
     if ($absencesData->isEmpty()) {
@@ -74,6 +79,7 @@ public function checkAbsencesExistence($filiere, $groupe, $date,$promotion)
         return response()->json(['exist' => true, 'absences' => $absencesData]);
     }
 }
+
 
     public function updateAbsence(Request $request)
 {

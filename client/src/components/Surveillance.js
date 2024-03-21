@@ -314,7 +314,6 @@ const Surveillance = () => {
                                     onChange={(e) =>
                                         setSelectedYear(e.target.value)
                                     }
-                                    defaultValue={new Date().getFullYear()} // Définit l'année actuelle comme valeur par défaut
                                 />
                             </label>
                         </div>

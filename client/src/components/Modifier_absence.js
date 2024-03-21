@@ -21,7 +21,6 @@ const Modifier_absence = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [absencesExist, setAbsencesExist] = useState(true);
     const [absencesData, setAbsencesData] = useState([]);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -62,14 +61,9 @@ const Modifier_absence = () => {
     useEffect(() => {
         const fetchStagiaires = async () => {
             try {
-                if (
-                    selectedFiliere &&
-                    selectedGroupe &&
-                    selectedDate &&
-                    selectedYear
-                ) {
+                if (selectedFiliere && selectedGroupe && selectedDate) {
                     const response = await axios.get(
-                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}/${selectedYear}`
+                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
                     );
                     const stagiairesData = response.data;
                     setStagiaires(stagiairesData);
@@ -80,13 +74,13 @@ const Modifier_absence = () => {
         };
 
         fetchStagiaires();
-    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
+    }, [selectedFiliere, selectedGroupe, selectedDate]);
 
     useEffect(() => {
         const checkAbsencesExistence = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8000/api/absences/existUpdate/${selectedFiliere}/${selectedGroupe}/${selectedDate}/${selectedYear}`
+                    `http://localhost:8000/api/absences/existUpdate/${selectedFiliere}/${selectedGroupe}/${selectedDate}`
                 );
                 const { exist, absences } = response.data;
                 if (exist) {
@@ -102,10 +96,10 @@ const Modifier_absence = () => {
             }
         };
 
-        if (selectedFiliere && selectedGroupe && selectedDate && selectedYear) {
+        if (selectedFiliere && selectedGroupe && selectedDate) {
             checkAbsencesExistence();
         }
-    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
+    }, [selectedFiliere, selectedGroupe, selectedDate]);
 
     useEffect(() => {
         if (absencesExist && absencesData.length > 0) {
@@ -136,17 +130,28 @@ const Modifier_absence = () => {
     const saveAbsence = async () => {
         try {
             if (absencesExist) {
-                const updatedAbsencesData = stagiaires.map(
-                    (stagiaire, index) => ({
-                        id: absencesData[index].id,
-                        status: statusValues[index],
-                        nombre_absence_heure: parseInt(nbr_absence[index]),
-                        date_absence: selectedDate,
-                        id_stagiaire: stagiaire.id,
-                        id_groupe: stagiaire.id_groupe,
-                        id_filiere: stagiaire.id_filiere,
+                const updatedAbsencesData = stagiaires
+                    .map((stagiaire, index) => {
+                        const absenceData = absencesData[index];
+                        if (absenceData) {
+                            return {
+                                id: absenceData.id,
+                                status: statusValues[index],
+                                nombre_absence_heure: parseInt(
+                                    nbr_absence[index]
+                                ),
+                                date_absence: selectedDate,
+                                id_stagiaire: stagiaire.id,
+                                id_groupe: stagiaire.id_groupe,
+                                id_filiere: stagiaire.id_filiere,
+                            };
+                        } else {
+                            // Gérer le cas où absencesData[index] est undefined
+                            return null;
+                        }
                     })
-                );
+                    .filter((absenceData) => absenceData !== null); // Supprimer les éléments null du tableau
+
                 console.log(updatedAbsencesData);
                 const response = await axios.put(
                     "http://localhost:8000/api/absences/update",
@@ -169,7 +174,8 @@ const Modifier_absence = () => {
                     },
                 });
             } else {
-                //
+                // Gérer le cas où absencesExist est false
+                // Ajoutez ici le code à exécuter lorsque les absences n'existent pas
             }
         } catch (error) {
             console.error("Error saving absences:", error);
@@ -296,19 +302,6 @@ const Modifier_absence = () => {
                                     onChange={(e) =>
                                         setSelectedDate(e.target.value)
                                     }
-                                />
-                            </label>
-                            <label>
-                                Années scolaire :
-                                <input
-                                    type="number"
-                                    id="year"
-                                    name="year"
-                                    value={selectedYear}
-                                    onChange={(e) =>
-                                        setSelectedYear(e.target.value)
-                                    }
-                                    defaultValue={new Date().getFullYear()} // Définit l'année actuelle comme valeur par défaut
                                 />
                             </label>
                         </div>

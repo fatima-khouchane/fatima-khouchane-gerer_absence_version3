@@ -41,10 +41,11 @@ Route::get('/filieres', [SurveillanceController::class, 'getFiliere']);
 Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
 Route::get('/stagiaires/{filiere}/{groupe}/{promotion}', [SurveillanceController::class, 'getStagiaireByFilter']);
 Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
-Route::get('/absences/existUpdate/{filiere}/{groupe}/{date}/{promotion}', [SurveillanceController::class, 'checkAbsencesExistence']);
+Route::get('/absences/existUpdate/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
 
+Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilterUpdate']);
 
-   Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);
+Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);
 Route::get('/sanctions', [SanctionController::class, 'getSanctions']);
 
 Route::get('/showSanction', [SanctionController::class, 'showSanction']);
