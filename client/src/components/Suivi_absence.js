@@ -59,7 +59,7 @@ const Suivi_absence = () => {
                     <textarea ref={contentRef} placeholder="Content" required />
                 </form>
             ),
-            allowOutsideClick: false, 
+            allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = {
@@ -176,7 +176,7 @@ const Suivi_absence = () => {
 
         const imgData = OFPPT_Logo;
         doc.addImage(imgData, "PNG", 14, 14, 18, 20);
-        doc.setFontSize(12); 
+        doc.setFontSize(12);
         doc.text("Office de la formation professionnelle", 60, 20);
         doc.text("et de la promotion du travail", 60, 26);
 
@@ -225,8 +225,6 @@ const Suivi_absence = () => {
 
         doc.save("tableau.pdf");
     };
-
-   
 
     return (
         <>
@@ -388,7 +386,7 @@ const Suivi_absence = () => {
                                                             <th>Prénom</th>
                                                             <th>Email</th>
                                                             <th>Téléphone</th>
-                                                           
+
                                                             <th>
                                                                 Total Absences
                                                             </th>
@@ -402,81 +400,84 @@ const Suivi_absence = () => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {stagiaires
-                                                            .filter(
-                                                                (stagiaire) =>
-                                                                    `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
-                                                                        .toLowerCase()
-                                                                        .includes(
-                                                                            searchTerm.toLowerCase()
-                                                                        )
-                                                            )
-                                                            .map(
-                                                                (
-                                                                    stagiaire,
-                                                                    index
-                                                                ) => (
-                                                                    <tr
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                    >
-                                                                        <td
-                                                                            style={{
-                                                                                color: "#22baa0",
-                                                                            }}
-                                                                        >
-                                                                            {
-                                                                                stagiaire.promotion
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.nom
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.prenom
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.email
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.telephone
-                                                                            }
-                                                                        </td>
-                                                                      
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.total_absences
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            {
-                                                                                stagiaire.type_sanction
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            <button
-                                                                                className="btn_email"
-                                                                                onClick={() =>
-                                                                                    sendEmail(
-                                                                                        stagiaire.email,
-                                                                                        stagiaire
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Email
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
+                                                        {stagiaires &&
+                                                            stagiaires
+                                                                .filter(
+                                                                    (
+                                                                        stagiaire
+                                                                    ) =>
+                                                                        `${stagiaire.nom} ${stagiaire.prenom} ${stagiaire.type_sanction} ${stagiaire.nom_filiere}`
+                                                                            .toLowerCase()
+                                                                            .includes(
+                                                                                searchTerm.toLowerCase()
+                                                                            )
                                                                 )
-                                                            )}
+                                                                .map(
+                                                                    (
+                                                                        stagiaire,
+                                                                        index
+                                                                    ) => (
+                                                                        <tr
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                        >
+                                                                            <td
+                                                                                style={{
+                                                                                    color: "#22baa0",
+                                                                                }}
+                                                                            >
+                                                                                {
+                                                                                    stagiaire.promotion
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.nom
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.prenom
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.email
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.telephone
+                                                                                }
+                                                                            </td>
+
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.total_absences
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                {
+                                                                                    stagiaire.type_sanction
+                                                                                }
+                                                                            </td>
+                                                                            <td>
+                                                                                <button
+                                                                                    className="btn_email"
+                                                                                    onClick={() =>
+                                                                                        sendEmail(
+                                                                                            stagiaire.email,
+                                                                                            stagiaire
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    Email
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    )
+                                                                )}
                                                     </tbody>
                                                 </table>
                                             </div>
