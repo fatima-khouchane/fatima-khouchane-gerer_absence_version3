@@ -39,9 +39,9 @@ Route::controller(AuthController::class)->group(function(){
 
 Route::get('/filieres', [SurveillanceController::class, 'getFiliere']);
 Route::get('/groupes', [SurveillanceController::class, 'getGroupe']);
-Route::get('/stagiaires/{filiere}/{groupe}', [SurveillanceController::class, 'getStagiaireByFilter']);
+Route::get('/stagiaires/{filiere}/{groupe}/{promotion}', [SurveillanceController::class, 'getStagiaireByFilter']);
 Route::post('/absences', [SurveillanceController::class, 'saveAbsence']);
-Route::get('/absences/existUpdate/{filiere}/{groupe}/{date}', [SurveillanceController::class, 'checkAbsencesExistence']);
+Route::get('/absences/existUpdate/{filiere}/{groupe}/{date}/{promotion}', [SurveillanceController::class, 'checkAbsencesExistence']);
 
 
    Route::put('/absences/update', [SurveillanceController::class, 'updateAbsence']);

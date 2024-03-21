@@ -21,6 +21,7 @@ const Modifier_absence = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [absencesExist, setAbsencesExist] = useState(true);
     const [absencesData, setAbsencesData] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -61,9 +62,14 @@ const Modifier_absence = () => {
     useEffect(() => {
         const fetchStagiaires = async () => {
             try {
-                if (selectedFiliere && selectedGroupe && selectedDate) {
+                if (
+                    selectedFiliere &&
+                    selectedGroupe &&
+                    selectedDate &&
+                    selectedYear
+                ) {
                     const response = await axios.get(
-                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
+                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}/${selectedYear}`
                     );
                     const stagiairesData = response.data;
                     setStagiaires(stagiairesData);
@@ -74,13 +80,13 @@ const Modifier_absence = () => {
         };
 
         fetchStagiaires();
-    }, [selectedFiliere, selectedGroupe, selectedDate]);
+    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
 
     useEffect(() => {
         const checkAbsencesExistence = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8000/api/absences/existUpdate/${selectedFiliere}/${selectedGroupe}/${selectedDate}`
+                    `http://localhost:8000/api/absences/existUpdate/${selectedFiliere}/${selectedGroupe}/${selectedDate}/${selectedYear}`
                 );
                 const { exist, absences } = response.data;
                 if (exist) {
@@ -96,10 +102,10 @@ const Modifier_absence = () => {
             }
         };
 
-        if (selectedFiliere && selectedGroupe && selectedDate) {
+        if (selectedFiliere && selectedGroupe && selectedDate && selectedYear) {
             checkAbsencesExistence();
         }
-    }, [selectedFiliere, selectedGroupe, selectedDate]);
+    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
 
     useEffect(() => {
         if (absencesExist && absencesData.length > 0) {
@@ -290,6 +296,19 @@ const Modifier_absence = () => {
                                     onChange={(e) =>
                                         setSelectedDate(e.target.value)
                                     }
+                                />
+                            </label>
+                            <label>
+                                Années scolaire :
+                                <input
+                                    type="number"
+                                    id="year"
+                                    name="year"
+                                    value={selectedYear}
+                                    onChange={(e) =>
+                                        setSelectedYear(e.target.value)
+                                    }
+                                    defaultValue={new Date().getFullYear()} // Définit l'année actuelle comme valeur par défaut
                                 />
                             </label>
                         </div>

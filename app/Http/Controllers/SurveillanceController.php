@@ -24,12 +24,14 @@ class SurveillanceController extends Controller
 
         return response()->json($groupes);
     }
-    public function  getStagiaireByFilter($filiere, $groupe){
-         $stagiaires = Stagiaire::where('id_groupe', $filiere)
-                            ->where('id_filiere', $groupe)
-                            ->get();
-         return response()->json($stagiaires);
-    }
+   public function getStagiaireByFilter($filiere, $groupe, $promotion){
+    $stagiaires = Stagiaire::where('id_groupe', $groupe)
+                           ->where('id_filiere', $filiere)
+                           ->where('promotion', $promotion)
+                           ->get();
+    return response()->json($stagiaires);
+}
+
 
     public function saveAbsence(Request $request)
 {
@@ -57,11 +59,13 @@ class SurveillanceController extends Controller
     }
 }
 
-public function checkAbsencesExistence($filiere, $groupe, $date)
+public function checkAbsencesExistence($filiere, $groupe, $date,$promotion)
 {
-    $absencesData = Absence::where('id_filiere', $filiere)
-        ->where('id_groupe', $groupe)
-        ->whereDate('date_absence', $date)
+    $absencesData = Absence::join('stagiaires', 'absences.id_stagiaire', '=', 'stagiaires.id')
+        ->where('stagiaires.id_filiere', $filiere)
+        ->where('stagiaires.id_groupe', $groupe)
+        ->whereDate('absences.date_absence', $date)
+        ->where('stagiaires.promotion', $promotion)
         ->get();
 
     if ($absencesData->isEmpty()) {

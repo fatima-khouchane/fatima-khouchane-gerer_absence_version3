@@ -51,7 +51,7 @@ const Raport = () => {
         const doc = new jsPDF();
         const imgData = OFPPT_Logo;
         doc.addImage(imgData, "PNG", 14, 14, 18, 20);
-        doc.setFontSize(12); 
+        doc.setFontSize(12);
 
         doc.text("Office de la formation professionnelle", 60, 20);
         doc.text("et de la promotion du travail", 60, 26);
@@ -79,7 +79,9 @@ const Raport = () => {
             startY: 90,
         });
 
-        doc.save(`raport_absence_ ${absences[0].nom} ${absences[0].prenom}.pdf`);
+        doc.save(
+            `raport_absence_ ${absences[0].nom} ${absences[0].prenom}.pdf`
+        );
     };
 
     return (
@@ -109,7 +111,13 @@ const Raport = () => {
                     {absences.map((absence, index) => (
                         <>
                             <tr key={index}>
-                                <td>{absence.date_absence}</td>
+                                <td
+                                    style={{
+                                        color: "#22baa0",
+                                    }}
+                                >
+                                    {absence.date_absence}
+                                </td>
                                 <td>{absence.status}</td>
                                 <td style={{ textAlign: "center" }}>
                                     {absence.nombre_absence_heure}

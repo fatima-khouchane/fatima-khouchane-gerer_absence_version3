@@ -18,6 +18,7 @@ const Surveillance = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [message, setMessage] = useState("");
     const [messageShow, setMessageShow] = useState("");
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -45,6 +46,7 @@ const Surveillance = () => {
                     "http://localhost:8000/api/groupes"
                 );
                 setGroupes(response.data);
+                console.log(response.data);
             } catch (error) {
                 console.error("Error fetching groupes:", error);
             }
@@ -58,9 +60,14 @@ const Surveillance = () => {
     useEffect(() => {
         const fetchStagiaires = async () => {
             try {
-                if (selectedFiliere && selectedGroupe && selectedDate) {
+                if (
+                    selectedFiliere &&
+                    selectedGroupe &&
+                    selectedDate &&
+                    selectedYear
+                ) {
                     const response = await axios.get(
-                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
+                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}/${selectedYear}`
                     );
                     const initialStatusValues = response.data.map(
                         () => "Présent"
@@ -69,6 +76,7 @@ const Surveillance = () => {
                     setStatusValues(initialStatusValues);
                     setNbr_absence(initialNbrAbsences);
                     setStagiaires(response.data);
+                    console.log(response.data);
                 }
             } catch (error) {
                 console.error("Error fetching stagiaires:", error);
@@ -76,7 +84,7 @@ const Surveillance = () => {
         };
 
         fetchStagiaires();
-    }, [selectedFiliere, selectedGroupe, selectedDate]);
+    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
 
     const handleNbrAbsenceChange = (value, index) => {
         const updatedNbrAbsence = [...nbr_absence];
@@ -294,6 +302,19 @@ const Surveillance = () => {
                                     onChange={(e) =>
                                         setSelectedDate(e.target.value)
                                     }
+                                />
+                            </label>
+                            <label>
+                                Année scolaire :
+                                <input
+                                    type="number"
+                                    id="year"
+                                    name="year"
+                                    value={selectedYear}
+                                    onChange={(e) =>
+                                        setSelectedYear(e.target.value)
+                                    }
+                                    defaultValue={new Date().getFullYear()} // Définit l'année actuelle comme valeur par défaut
                                 />
                             </label>
                         </div>
