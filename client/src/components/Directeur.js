@@ -7,22 +7,23 @@ import Swal from "sweetalert2";
 
 const Directeur = () => {
     const navigate = useNavigate();
-    const [anneeScolaire, setAnneeScolaire] = useState("");
     const [stagiaires, setStagiaires] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const [date_debut, setdate_debut] = useState("");
-    const [date_fin, setdate_fin] = useState("");
+    // const [date_debut, setdate_debut] = useState("");
+    // const [date_fin, setdate_fin] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
 
+    const [anneeScolaire, setAnneeScolaire] = useState("");
     useEffect(() => {
         const dateActuelle = new Date();
-
         const annee = dateActuelle.getFullYear();
-
         const anneeScolaireDefaut = `${annee}`;
 
         setAnneeScolaire(anneeScolaireDefaut);
     }, []);
+    const handleAnneeScolaireChange = (e) => {
+        setAnneeScolaire(e.target.value);
+    };
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -35,7 +36,7 @@ const Directeur = () => {
         const fetchStagiaires = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8000/api/getStagiairesDashboard`,
+                    `http://localhost:8000/api/getStagiairesWithAbsencesAndSanctions`,
                     {
                         params: { promotion: anneeScolaire },
                     }
@@ -55,7 +56,8 @@ const Directeur = () => {
         }
         fetchUserDetails();
     }, [anneeScolaire]);
-
+    console.log(anneeScolaire);
+    console.log(anneeScolaire);
     const generateReport = (id_stagiaire) => {
         console.log("ID Stagiaire:", id_stagiaire);
 
@@ -78,10 +80,6 @@ const Directeur = () => {
                 navigate(`/rapport/${id_stagiaire}/${date_debut}/${date_fin}`);
             }
         });
-    };
-
-    const handleAnneeScolaireChange = (e) => {
-        setAnneeScolaire(e.target.value);
     };
 
     return (
@@ -169,10 +167,12 @@ const Directeur = () => {
                                     />
 
                                     <input
-                                        type="search"
+                                        type="number"
                                         placeholder="Année scolaire"
                                         className="record-search"
-                                        value={anneeScolaire}
+                                        value={
+                                            anneeScolaire ? anneeScolaire : ""
+                                        }
                                         onChange={handleAnneeScolaireChange}
                                     />
                                 </div>
@@ -188,7 +188,8 @@ const Directeur = () => {
                                                     <th>Filiere</th>
                                                     <th>Groupe</th>
                                                     <th>
-                                                        Somme d'absence/heure
+                                                        Somme d'absence
+                                                        injustifié
                                                     </th>
                                                     <th>type sanctions</th>
                                                     <th>Action</th>
@@ -234,7 +235,7 @@ const Directeur = () => {
                                                                 }}
                                                             >
                                                                 {
-                                                                    stagiaire.total_absences
+                                                                    stagiaire.total_absences_injustifié
                                                                 }
                                                             </td>
                                                             <td>

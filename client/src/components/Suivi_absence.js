@@ -170,6 +170,7 @@ const Suivi_absence = () => {
             fetchStagiaires();
         }
     }, [selectedFiliere, selectedGroupe, selectedPromotion]);
+    console.log(stagiaires);
 
     const handlePrint = async () => {
         const doc = new jsPDF();
@@ -388,8 +389,9 @@ const Suivi_absence = () => {
                                                             <th>Téléphone</th>
 
                                                             <th>
-                                                                Total Absences
+                                                                Total Absences injustifié
                                                             </th>
+                                                            {/* <th>Total absence </th> */}
                                                             <th>
                                                                 Type Sanction
                                                             </th>
@@ -463,13 +465,13 @@ const Suivi_absence = () => {
                                                                                 }}
                                                                             >
                                                                                 {
-                                                                                    stagiaire.total_absences
+                                                                                    stagiaire.total_absences_injustifié
                                                                                 }
                                                                             </td>
                                                                             <td>
                                                                                 {
                                                                                     stagiaire.type_sanction
-                                                                                }{" "}
+                                                                                }
                                                                             </td>
                                                                             <td>
                                                                                 <button

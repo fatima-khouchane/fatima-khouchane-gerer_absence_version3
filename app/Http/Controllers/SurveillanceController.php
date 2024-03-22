@@ -142,48 +142,7 @@ public function checkAbsencesExistence($filiere, $groupe, $date)
 
     // 
 
-    
-public function getStagiairesDashboard(Request $request)
-{
-    
-    $promotion = $request->input('promotion');
-
-    $stagiairesWithAbsencesAndSanctions = DB::table('stagiaires')
-        ->join('absences', 'stagiaires.id', '=', 'absences.id_stagiaire')
-        ->leftJoin('vue_sanctions', 'stagiaires.id', '=', 'vue_sanctions.id_stagiaire')
-        ->join('groupes', 'stagiaires.id_groupe', '=', 'groupes.id')
-        ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id')
-        ->select(
-           'stagiaires.id',
-            'stagiaires.promotion',
-            'stagiaires.nom',
-            'stagiaires.prenom',
-            'stagiaires.email',
-            'stagiaires.telephone',
-            'groupes.numero_groupe as numero_groupe',
-            'filieres.nom_filiere as nom_filiere',
-            DB::raw('SUM(absences.nombre_absence_heure) as total_absences'),
-            'vue_sanctions.type_sanction'
-        )
-       
-        ->where('stagiaires.promotion', '=', $promotion)
-        ->groupBy(
-            'stagiaires.id',
-            'stagiaires.promotion',
-            'stagiaires.nom',
-            'stagiaires.prenom',
-            'stagiaires.email',
-            'stagiaires.telephone',
-            'groupes.numero_groupe',
-            'filieres.nom_filiere',
-            'vue_sanctions.type_sanction'
-        )
-        ->get();
-
-    return response()->json(['stagiaires' => $stagiairesWithAbsencesAndSanctions]);
-}
-
-
+ 
 // 
 
     public function generateReport(Request $request)
@@ -222,41 +181,6 @@ public function checkAbsencesExistenceSaisir($filiere, $groupe, $date)
 
 
 
-
-        public function dashboard_statistique(Request $request)
-{
-    $promotion = $request->input('promotion');
-
-    $totalStagiaires = DB::table('stagiaires')
-        ->where('promotion', $promotion)
-        ->count();
-
-    if ($totalStagiaires === 0) {
-        return response()->json([
-            'error' => 'Aucun stagiaire trouvé pour l\'année scolaire spécifiée.'
-        ], 404);
-    }
-
-   
-    $totalFilieres = DB::table('stagiaires')
-        ->join('filieres', 'stagiaires.id_filiere', '=', 'filieres.id')
-        ->where('stagiaires.promotion', $promotion)
-        ->select('filieres.id')
-        ->distinct()
-        ->count();
-
-    $totalExclusions = DB::table('stagiaires')
-        ->join('vue_sanctions', 'stagiaires.id', '=', 'vue_sanctions.id_stagiaire')
-        ->where('stagiaires.promotion', $promotion)
-        ->where('vue_sanctions.type_sanction', 'exclusion définitive')
-        ->count();
-
-    return response()->json([
-        'totalStagiaires' => $totalStagiaires,
-        'totalFilieres' => $totalFilieres,
-        'totalExclusions' => $totalExclusions
-    ]);
-}
 
 
 }

@@ -4,7 +4,6 @@ import OFPPT_Logo from "../images/OFPPT_Logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 const Statistique = () => {
     const navigate = useNavigate();
     const [anneeScolaire, setAnneeScolaire] = useState("");
@@ -43,17 +42,16 @@ const Statistique = () => {
 
             try {
                 const response = await axios.get(
-                    `http://localhost:8000/api/dashboard_statistique`,
+                    `http://localhost:8000/api/statistique`,
                     {
                         params: { promotion: anneeScolaire },
                     }
                 );
                 if (response.status === 200) {
-                    const { totalStagiaires, totalFilieres, totalExclusions } =
-                        response.data;
+                    const { totalStagiaires, totalFilieres } = response.data;
                     setTotalStagiaires(totalStagiaires);
                     setTotalFilieres(totalFilieres);
-                    setTotalExclusions(totalExclusions);
+                    // setTotalExclusions(totalExclusions);
                     setError("");
                 } else {
                     throw new Error("Failed to fetch data");
@@ -67,7 +65,7 @@ const Statistique = () => {
 
         fetchStagiaires();
     }, [anneeScolaire]);
-    console.log(totalExclusions, totalFilieres, totalStagiaires);
+    console.log(totalFilieres, totalStagiaires);
     return (
         <>
             <input type="checkbox" id="menu-toggle" />
@@ -180,19 +178,6 @@ const Statistique = () => {
                                     </div>
                                     <div className="card-progress">
                                         <small>somme des filières</small>
-                                    </div>
-                                </div>
-
-                                <div className="card">
-                                    <div className="card-head">
-                                        <h2>{totalExclusions}</h2>
-                                        <span className="las la-user-friends"></span>
-                                    </div>
-                                    <div className="card-progress">
-                                        <small>
-                                            somme des stagiaires exclus
-                                            définitivement
-                                        </small>
                                     </div>
                                 </div>
                             </div>
