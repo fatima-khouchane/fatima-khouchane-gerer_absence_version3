@@ -13,27 +13,28 @@ return new class extends Migration
     public function up(): void
     {
        DB::statement("
-            CREATE VIEW vue_sanctions AS
+              CREATE VIEW vue_sanctions AS
             SELECT
                 s.id AS id_stagiaire,
                 CASE
-                    WHEN SUM(a.nombre_absence_heure) = 5 THEN 'Première mise en garde'
-                    WHEN SUM(a.nombre_absence_heure) = 10 THEN 'Deuxième mise en garde'
-                    WHEN SUM(a.nombre_absence_heure) = 15 THEN 'Premier avertissement'
-                    WHEN SUM(a.nombre_absence_heure) = 20 THEN 'Deuxième avertissement'
-                    WHEN SUM(a.nombre_absence_heure) = 25 THEN 'Blâme'
-                    WHEN SUM(a.nombre_absence_heure) = 30 THEN 'Exclusion de 2 jours'
-                   WHEN SUM(a.nombre_absence_heure) = 35 THEN 'Exclusion temporaire'
-                   WHEN SUM(a.nombre_absence_heure) = 40 THEN 'Exclusion temporaire'
-                   WHEN SUM(a.nombre_absence_heure) = 45 THEN 'Exclusion temporaire'
-
-                    WHEN SUM(a.nombre_absence_heure) > 50 THEN 'Exclusion définitive'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 5 THEN 'Première mise en garde'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 10 THEN 'Deuxième mise en garde'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 15 THEN 'Premier avertissement'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 20 THEN 'Deuxième avertissement'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 25 THEN 'Blâme'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 30 THEN 'Exclusion de 2 jours'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 35 THEN 'Exclusion temporaire'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 40 THEN 'Exclusion temporaire'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) = 45 THEN 'Exclusion temporaire'
+                    WHEN SUM(CASE WHEN a.status = 'Absence' THEN a.nombre_absence_heure ELSE 0 END) > 50 THEN 'Exclusion définitive'
                     ELSE 'Pas de sanction'
                 END AS type_sanction
             FROM
                 stagiaires s
             LEFT JOIN
                 absences a ON s.id = a.id_stagiaire
+            WHERE
+                a.status = 'Absence'
             GROUP BY
                 s.id;
         ");

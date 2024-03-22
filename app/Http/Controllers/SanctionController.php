@@ -19,7 +19,6 @@ class SanctionController extends Controller
         return response()->json(['sanctions' => $sanctions]);
     }
 
-
 public function getStagiairesWithAbsencesAndSanctions(Request $request)
 {
     $id_filiere = $request->input('id_filiere');
@@ -40,7 +39,8 @@ public function getStagiairesWithAbsencesAndSanctions(Request $request)
             'stagiaires.telephone',
             'groupes.numero_groupe as numero_groupe',
             'filieres.nom_filiere as nom_filiere',
-            DB::raw('SUM(absences.nombre_absence_heure) as total_absences'),
+            DB::raw('SUM(  absences.nombre_absence_heure ) as total_absences'),
+            
             'vue_sanctions.type_sanction'
         )
         ->where('filieres.id', '=', $id_filiere)
@@ -65,9 +65,5 @@ public function getStagiairesWithAbsencesAndSanctions(Request $request)
 
     return response()->json(['stagiaires' => $stagiairesWithAbsencesAndSanctions]);
 }
-
-
-
-
 
 }

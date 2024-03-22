@@ -32,10 +32,11 @@ class SurveillanceController extends Controller
     return response()->json($stagiaires);
 }
 
-public function getStagiaireByFilterUpdate($filiere, $groupe){
-    $stagiaires = Stagiaire::where('id_groupe', $groupe)
+public function getStagiaireByFilterUpdate($filiere, $groupe,$promotion)
+{
+     $stagiaires = Stagiaire::where('id_groupe', $groupe)
                            ->where('id_filiere', $filiere)
-                        //    ->where('promotion', $promotion)
+                           ->where('promotion', $promotion)
                            ->get();
     return response()->json($stagiaires);
 }

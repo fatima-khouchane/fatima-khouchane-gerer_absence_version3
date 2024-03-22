@@ -381,7 +381,7 @@ const Suivi_absence = () => {
                                                 >
                                                     <thead>
                                                         <tr>
-                                                            <th>Promotion</th>
+                                                            {/* <th>Promotion</th> */}
                                                             <th>Nom</th>
                                                             <th>Prénom</th>
                                                             <th>Email</th>
@@ -422,7 +422,7 @@ const Suivi_absence = () => {
                                                                                 index
                                                                             }
                                                                         >
-                                                                            <td
+                                                                            {/* <td
                                                                                 style={{
                                                                                     color: "#22baa0",
                                                                                 }}
@@ -430,8 +430,12 @@ const Suivi_absence = () => {
                                                                                 {
                                                                                     stagiaire.promotion
                                                                                 }
-                                                                            </td>
-                                                                            <td>
+                                                                            </td> */}
+                                                                            <td
+                                                                                style={{
+                                                                                    color: "#22baa0",
+                                                                                }}
+                                                                            >
                                                                                 {
                                                                                     stagiaire.nom
                                                                                 }
@@ -452,7 +456,12 @@ const Suivi_absence = () => {
                                                                                 }
                                                                             </td>
 
-                                                                            <td>
+                                                                            <td
+                                                                                style={{
+                                                                                    textAlign:
+                                                                                        "center",
+                                                                                }}
+                                                                            >
                                                                                 {
                                                                                     stagiaire.total_absences
                                                                                 }
@@ -460,7 +469,7 @@ const Suivi_absence = () => {
                                                                             <td>
                                                                                 {
                                                                                     stagiaire.type_sanction
-                                                                                }
+                                                                                }{" "}
                                                                             </td>
                                                                             <td>
                                                                                 <button

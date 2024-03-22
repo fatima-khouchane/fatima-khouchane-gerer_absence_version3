@@ -9,6 +9,7 @@ const Modifier_absence = () => {
     const navigate = useNavigate();
     const [absencesExistTrue, setAbsencesExistTrue] = useState(false);
     const [absencesExistFalse, setAbsencesExistFalse] = useState(false);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     const [filieres, setFilieres] = useState([]);
     const [statusValues, setStatusValues] = useState([]);
@@ -61,9 +62,9 @@ const Modifier_absence = () => {
     useEffect(() => {
         const fetchStagiaires = async () => {
             try {
-                if (selectedFiliere && selectedGroupe && selectedDate) {
+                if (selectedFiliere && selectedGroupe && selectedYear) {
                     const response = await axios.get(
-                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}`
+                        `http://localhost:8000/api/stagiaires/${selectedFiliere}/${selectedGroupe}/${selectedYear}`
                     );
                     const stagiairesData = response.data;
                     setStagiaires(stagiairesData);
@@ -91,6 +92,7 @@ const Modifier_absence = () => {
                     setAbsencesExistTrue(false);
                 }
                 setAbsencesData(absences);
+                console.log(response.data);
             } catch (error) {
                 console.error("Error checking absences existence:", error);
             }
@@ -301,6 +303,18 @@ const Modifier_absence = () => {
                                     value={selectedDate}
                                     onChange={(e) =>
                                         setSelectedDate(e.target.value)
+                                    }
+                                />
+                            </label>
+                            <label>
+                                Année scolaire :
+                                <input
+                                    type="number"
+                                    id="year"
+                                    name="year"
+                                    value={selectedYear}
+                                    onChange={(e) =>
+                                        setSelectedYear(e.target.value)
                                     }
                                 />
                             </label>
