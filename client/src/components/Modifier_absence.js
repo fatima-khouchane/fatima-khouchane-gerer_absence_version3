@@ -75,7 +75,7 @@ const Modifier_absence = () => {
         };
 
         fetchStagiaires();
-    }, [selectedFiliere, selectedGroupe, selectedDate]);
+    }, [selectedFiliere, selectedGroupe, selectedDate, selectedYear]);
 
     useEffect(() => {
         const checkAbsencesExistence = async () => {

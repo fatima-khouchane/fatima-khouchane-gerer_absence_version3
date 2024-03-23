@@ -9,10 +9,10 @@ const Directeur = () => {
     const navigate = useNavigate();
     const [stagiaires, setStagiaires] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    // const [date_debut, setdate_debut] = useState("");
-    // const [date_fin, setdate_fin] = useState("");
+    const [date_debut, setdate_debut] = useState("");
+    const [date_fin, setdate_fin] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-
+    const [error, setError] = useState("");
     const [anneeScolaire, setAnneeScolaire] = useState("");
     useEffect(() => {
         const dateActuelle = new Date();
@@ -33,6 +33,7 @@ const Directeur = () => {
                 return;
             }
         };
+
         const fetchStagiaires = async () => {
             try {
                 const response = await axios.get(
@@ -42,22 +43,33 @@ const Directeur = () => {
                     }
                 );
                 if (response.status === 200) {
-                    setStagiaires(response.data.stagiaires);
-                    setDataLoaded(true);
+                    if (
+                        !response.data.stagiaires ||
+                        response.data.stagiaires.length === 0
+                    ) {
+                        setStagiaires([]);
+                    } else {
+                        setStagiaires(response.data.stagiaires);
+                        setDataLoaded(true);
+                    }
                 } else {
                     throw new Error("Failed to fetch data");
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setError(
+                    "Une erreur s'est produite lors du chargement des données."
+                );
             }
         };
+
         if (anneeScolaire !== "") {
             fetchStagiaires();
         }
         fetchUserDetails();
     }, [anneeScolaire]);
-    console.log(anneeScolaire);
-    console.log(anneeScolaire);
+    console.log(stagiaires);
+    // console.log(anneeScolaire);
     const generateReport = (id_stagiaire) => {
         console.log("ID Stagiaire:", id_stagiaire);
 
@@ -170,13 +182,13 @@ const Directeur = () => {
                                         type="number"
                                         placeholder="Année scolaire"
                                         className="record-search"
-                                        value={
-                                            anneeScolaire ? anneeScolaire : ""
-                                        }
+                                        value={anneeScolaire}
                                         onChange={handleAnneeScolaireChange}
                                     />
                                 </div>
                             </div>
+                            {/* {error && <p>{error}</p>} */}
+
                             {anneeScolaire && dataLoaded ? (
                                 stagiaires.length > 0 ? (
                                     <div>
@@ -262,7 +274,15 @@ const Directeur = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    <p>Aucun stagiaire trouvé.</p>
+                                    <p
+                                        style={{
+                                            textAlign: "center",
+                                            color: "red",
+                                            fontSize: "1.4rem",
+                                        }}
+                                    >
+                                        Aucun stagiaire trouvé.
+                                    </p>
                                 )
                             ) : null}
                         </div>
